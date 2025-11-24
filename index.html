@@ -76,7 +76,9 @@
         .scene-section-label { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         .scene-section-content { font-size: 13px; line-height: 1.7; color: var(--color-text); }
         .shot-item { margin-bottom: 12px; padding-left: 16px; border-left: 2px solid var(--color-border); }
-        .shot-label { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+        .shot-label { font-weight: 600; font-size: 13px; margin-bottom: 4px; color: var(--color-primary); }
+        .shot-content { font-size: 12px; line-height: 1.6; }
+        .shot-detail { margin: 4px 0; }
         .action-buttons { display: flex; gap: 16px; margin-top: 24px; }
         @media (max-width: 768px) { body { padding: 16px; } .phase { padding: 24px; } .navigation { flex-direction: column; } .navigation button { width: 100%; } }
     </style>
@@ -423,25 +425,111 @@ Use sensory language, cynical wit, authentic voice.`
             document.getElementById('errorMessage').classList.remove('hidden');
         }
 
+        function extractShotsFromVO(vo, sceneNum, heroProduct, duration) {
+            const shotCount = 5;
+            const secondsPerShot = Math.round(duration / shotCount);
+            
+            const shots = [
+                {
+                    num: 1,
+                    label: 'Opening/Hook',
+                    timeStart: 0,
+                    timeEnd: secondsPerShot,
+                    extract: 'First impression, setup',
+                    focal: 'Establish context',
+                    where: 'Opening location',
+                    action: 'Set the scene',
+                    details: 'Authenticity and atmosphere',
+                    broll: 'Wide establishing shots'
+                },
+                {
+                    num: 2,
+                    label: 'Transition/Approach',
+                    timeStart: secondsPerShot,
+                    timeEnd: secondsPerShot * 2,
+                    extract: 'Moving toward subject',
+                    focal: 'Hero product becoming visible',
+                    where: 'Approach area',
+                    action: 'Build anticipation',
+                    details: 'Sensory moments',
+                    broll: 'Medium approach shots'
+                },
+                {
+                    num: 3,
+                    label: 'Context/Environment',
+                    timeStart: secondsPerShot * 2,
+                    timeEnd: secondsPerShot * 3,
+                    extract: 'Setting and atmosphere',
+                    focal: 'Hero product in environment',
+                    where: 'Main location',
+                    action: 'Show the space',
+                    details: 'Team, tools, authenticity',
+                    broll: 'Wide interior/environment shots'
+                },
+                {
+                    num: 4,
+                    label: 'Close-Up/Detail',
+                    timeStart: secondsPerShot * 3,
+                    timeEnd: secondsPerShot * 4,
+                    extract: 'Product detail and texture',
+                    focal: 'EXTREME CLOSE-UP of ' + heroProduct,
+                    where: 'Macro detail zone',
+                    action: 'Reveal quality',
+                    details: 'Texture, color, craftsmanship',
+                    broll: 'Macro and detail shots'
+                },
+                {
+                    num: 5,
+                    label: 'Payoff/Reaction',
+                    timeStart: secondsPerShot * 4,
+                    timeEnd: secondsPerShot * 5,
+                    extract: 'Human moment or satisfaction',
+                    focal: 'Genuine reaction or result',
+                    where: 'Natural setting',
+                    action: 'Capture authenticity',
+                    details: 'Real emotion and satisfaction',
+                    broll: 'Customer/user reaction shots'
+                }
+            ];
+
+            return shots;
+        }
+
         function buildStoryboard() {
             const container = document.getElementById('storyboardContainer');
             container.innerHTML = '';
             const duration = document.getElementById('reelLength').value === '15' ? 5 : 
                            document.getElementById('reelLength').value === '30' ? 7.5 : 12;
             const sceneNames = ['The Opening', 'The Hook', 'The Heart', 'The Build', 'The Close'];
-            const sceneCount = appData.scenes.length;
 
             appData.scenes.forEach((scene, i) => {
                 const sceneDiv = document.createElement('div');
                 sceneDiv.className = 'scene-block';
                 
                 const title = `Scene ${i + 1}: ${sceneNames[i]}`;
-                const shotCount = 5;
-                const secondsPerShot = Math.round(duration / shotCount);
+                const shots = extractShotsFromVO(scene.vo, i + 1, appData.heroProduct, duration);
+                
+                let shotsHTML = '';
+                shots.forEach(shot => {
+                    shotsHTML += `
+                        <div class="shot-item">
+                            <div class="shot-label">Shot ${shot.num}: ${shot.label} (${shot.timeStart}-${shot.timeEnd}s)</div>
+                            <div class="shot-content">
+                                <div class="shot-detail"><strong>VO Hook:</strong> Extract relevant line from narrative</div>
+                                <div class="shot-detail"><strong>What to Shoot:</strong> ${shot.extract}</div>
+                                <div class="shot-detail"><strong>Focal Point:</strong> ${shot.focal}</div>
+                                <div class="shot-detail"><strong>Where:</strong> ${shot.where}</div>
+                                <div class="shot-detail"><strong>Action:</strong> ${shot.action}</div>
+                                <div class="shot-detail"><strong>Details to Capture:</strong> ${shot.details}</div>
+                                <div class="shot-detail"><strong>B-roll Option:</strong> ${shot.broll}</div>
+                            </div>
+                        </div>
+                    `;
+                });
                 
                 sceneDiv.innerHTML = `
                     <div class="scene-title">${title}</div>
-                    <div class="scene-meta">Duration: ${Math.round(duration)}s total | ~${secondsPerShot}s per shot</div>
+                    <div class="scene-meta">Duration: ${Math.round(duration)}s total | ~${Math.round(duration / 5)}s per shot</div>
                     
                     <div class="scene-section">
                         <div class="scene-section-label">Narrative VO</div>
@@ -449,57 +537,8 @@ Use sensory language, cynical wit, authentic voice.`
                     </div>
                     
                     <div class="scene-section">
-                        <div class="scene-section-label">Shot Breakdown</div>
-                        <div class="shot-item">
-                            <div class="shot-label">Shot 1: Establishing (0-${secondsPerShot}s)</div>
-                            <div class="scene-section-content">
-                                <strong>Focal Point:</strong> Hero product (${appData.heroProduct}) in context of opening<br>
-                                <strong>Composition:</strong> Wide establishing shot showing environment<br>
-                                <strong>Action:</strong> Camera movement introducing the space/business<br>
-                                <strong>Details to capture:</strong> Environment authenticity, entrance, signage, first impression<br>
-                                <strong>Background:</strong> Location details, atmosphere, lighting
-                            </div>
-                        </div>
-                        <div class="shot-item">
-                            <div class="shot-label">Shot 2: Transition/Approach (${secondsPerShot}-${secondsPerShot * 2}s)</div>
-                            <div class="scene-section-content">
-                                <strong>Focal Point:</strong> ${appData.heroProduct} becoming visible<br>
-                                <strong>Composition:</strong> Medium shot at entry or counter level<br>
-                                <strong>Action:</strong> Movement toward hero product, sensory moment<br>
-                                <strong>Details to capture:</strong> Heat/steam/energy, the threshold moment, anticipation<br>
-                                <strong>Background:</strong> Interior setup visible, counter, preparation area
-                            </div>
-                        </div>
-                        <div class="shot-item">
-                            <div class="shot-label">Shot 3: Wide Interior/Context (${secondsPerShot * 2}-${secondsPerShot * 3}s)</div>
-                            <div class="scene-section-content">
-                                <strong>Focal Point:</strong> ${appData.heroProduct} in action (cooking/preparation/in use)<br>
-                                <strong>Composition:</strong> Wide shot of workspace with hero product featured<br>
-                                <strong>Action:</strong> Active preparation/cooking/delivery of hero product<br>
-                                <strong>Details to capture:</strong> Flame, sizzle, motion, craftsmanship, authenticity<br>
-                                <strong>Background:</strong> Team, tools, signage, other menu items, people reacting
-                            </div>
-                        </div>
-                        <div class="shot-item">
-                            <div class="shot-label">Shot 4: Macro Close-Up (${secondsPerShot * 3}-${secondsPerShot * 4}s)</div>
-                            <div class="scene-section-content">
-                                <strong>Focal Point:</strong> EXTREME CLOSE-UP of ${appData.heroProduct} - fill frame<br>
-                                <strong>Composition:</strong> Detail shot, textures visible, sensory focus<br>
-                                <strong>Action:</strong> Final moment of preparation or moment of completion<br>
-                                <strong>Details to capture:</strong> Color, char marks, moisture, quality details, craftsmanship evidence<br>
-                                <strong>Background:</strong> Blurred kitchen/counter, bokeh lighting
-                            </div>
-                        </div>
-                        <div class="shot-item">
-                            <div class="shot-label">Shot 5: Moment/Payoff (${secondsPerShot * 4}-${secondsPerShot * 5}s)</div>
-                            <div class="scene-section-content">
-                                <strong>Focal Point:</strong> Human connection or final reveal (customer, team member, or served product)<br>
-                                <strong>Composition:</strong> Medium shots of real people/authentic moment<br>
-                                <strong>Action:</strong> Natural, candid reaction or service moment<br>
-                                <strong>Details to capture:</strong> Genuine emotion, authenticity, real response to hero product<br>
-                                <strong>Background:</strong> Business setting, counter, other customers
-                            </div>
-                        </div>
+                        <div class="scene-section-label">Shot Breakdown (Extracted from VO)</div>
+                        ${shotsHTML}
                     </div>
                 `;
                 
@@ -509,7 +548,14 @@ Use sensory language, cynical wit, authentic voice.`
 
         function exportPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
+            const doc = new jsPDF('p', 'mm', 'letter');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const marginLeft = 12.7;
+            const marginRight = 12.7;
+            const marginTop = 12.7;
+            const marginBottom = 12.7;
+            const pageContentWidth = pageWidth - marginLeft - marginRight;
             
             const title = document.getElementById('titleHook').value || 'Storyboard';
             const duration = document.getElementById('reelLength').value === '15' ? 5 : 
@@ -518,79 +564,92 @@ Use sensory language, cynical wit, authentic voice.`
             const shotCount = 5;
             const secondsPerShot = Math.round(duration / shotCount);
 
-            // Title Page
-            doc.setFontSize(20);
+            // Cover Page
+            doc.setFontSize(22);
             doc.setFont(undefined, 'bold');
-            doc.text(title, 20, 30);
+            doc.text(title, marginLeft, marginTop + 20, { maxWidth: pageContentWidth });
             
-            doc.setFontSize(11);
+            doc.setFontSize(12);
             doc.setFont(undefined, 'normal');
-            doc.text('Production-Ready Storyboard', 20, 40);
-            doc.text('Business: ' + appData.businessName, 20, 48);
-            doc.text('Hero Product: ' + appData.heroProduct, 20, 56);
-            doc.text('Date: ' + new Date().toLocaleDateString(), 20, 64);
+            doc.text('Production-Ready Storyboard', marginLeft, marginTop + 40);
+            doc.text('Business: ' + appData.businessName, marginLeft, marginTop + 50);
+            doc.text('Hero Product: ' + appData.heroProduct, marginLeft, marginTop + 60);
+            doc.text('Date: ' + new Date().toLocaleDateString(), marginLeft, marginTop + 70);
 
-            let y = 80;
+            let y;
 
             appData.scenes.forEach((scene, sceneIdx) => {
                 // New page for each scene
                 doc.addPage();
-                y = 20;
+                y = marginTop;
 
                 // Scene title
-                doc.setFontSize(16);
+                doc.setFontSize(14);
                 doc.setFont(undefined, 'bold');
-                doc.text('Scene ' + (sceneIdx + 1) + ': ' + sceneNames[sceneIdx], 20, y);
-                y += 10;
+                const sceneTitle = 'Scene ' + (sceneIdx + 1) + ': ' + sceneNames[sceneIdx];
+                doc.text(sceneTitle, marginLeft, y);
+                y += 8;
 
                 // Scene meta
                 doc.setFontSize(9);
                 doc.setFont(undefined, 'normal');
-                doc.text('Duration: ' + Math.round(duration) + 's total | ~' + secondsPerShot + 's per shot', 20, y);
+                const metaText = 'Duration: ' + Math.round(duration) + 's total | ~' + secondsPerShot + 's per shot';
+                doc.text(metaText, marginLeft, y);
                 y += 8;
 
                 // Narrative VO
                 doc.setFontSize(10);
                 doc.setFont(undefined, 'bold');
-                doc.text('Narrative VO:', 20, y);
+                doc.text('Narrative VO:', marginLeft, y);
                 y += 6;
                 
                 doc.setFontSize(9);
                 doc.setFont(undefined, 'normal');
-                const voLines = doc.splitTextToSize(scene.vo, 170);
-                doc.text(voLines, 20, y);
-                y += (voLines.length * 4) + 8;
+                const voLines = doc.splitTextToSize(scene.vo, pageContentWidth);
+                doc.text(voLines, marginLeft, y);
+                y += (voLines.length * 3.5) + 6;
 
                 // Shot breakdown
                 doc.setFontSize(10);
                 doc.setFont(undefined, 'bold');
-                doc.text('Shot Breakdown:', 20, y);
-                y += 8;
+                doc.text('Shot Breakdown (Extracted from VO):', marginLeft, y);
+                y += 7;
 
                 const shots = [
-                    { label: 'Shot 1: Establishing', time: `0-${secondsPerShot}s`, focal: 'Hero product in context', action: 'Camera movement introducing space' },
-                    { label: 'Shot 2: Transition', time: `${secondsPerShot}-${secondsPerShot * 2}s`, focal: appData.heroProduct + ' becoming visible', action: 'Movement toward hero product' },
-                    { label: 'Shot 3: Wide Interior', time: `${secondsPerShot * 2}-${secondsPerShot * 3}s`, focal: appData.heroProduct + ' in action', action: 'Active preparation/cooking' },
-                    { label: 'Shot 4: Macro Close-Up', time: `${secondsPerShot * 3}-${secondsPerShot * 4}s`, focal: 'EXTREME CLOSE-UP of ' + appData.heroProduct, action: 'Detail, textures, quality' },
-                    { label: 'Shot 5: Payoff', time: `${secondsPerShot * 4}-${secondsPerShot * 5}s`, focal: 'Human connection/final reveal', action: 'Natural, candid reaction' }
+                    { num: 1, label: 'Opening/Hook', extract: 'First impression, setup', details: 'Authenticity and atmosphere' },
+                    { num: 2, label: 'Transition/Approach', extract: 'Moving toward subject', details: 'Sensory moments and anticipation' },
+                    { num: 3, label: 'Context/Environment', extract: 'Setting and atmosphere', details: 'Team, tools, and authenticity' },
+                    { num: 4, label: 'Close-Up/Detail', extract: 'Product detail and texture', details: 'Color, texture, craftsmanship' },
+                    { num: 5, label: 'Payoff/Reaction', extract: 'Human moment or satisfaction', details: 'Real emotion and satisfaction' }
                 ];
 
                 doc.setFontSize(8);
-                shots.forEach(shot => {
-                    if (y > 260) {
+                doc.setFont(undefined, 'normal');
+                
+                shots.forEach((shot, shotIdx) => {
+                    // Check if we need a new page
+                    if (y > pageHeight - marginBottom - 20) {
                         doc.addPage();
-                        y = 20;
+                        y = marginTop;
+                        
+                        // Re-add scene header on new page
+                        doc.setFontSize(10);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(sceneTitle + ' (continued)', marginLeft, y);
+                        y += 6;
                     }
                     
                     doc.setFont(undefined, 'bold');
-                    doc.text(shot.label + ' (' + shot.time + ')', 20, y);
-                    y += 5;
+                    doc.text('Shot ' + shot.num + ': ' + shot.label + ' (' + (shot.num - 1) * secondsPerShot + '-' + shot.num * secondsPerShot + 's)', marginLeft, y);
+                    y += 4;
                     
                     doc.setFont(undefined, 'normal');
-                    doc.text('Focal Point: ' + shot.focal, 25, y);
-                    y += 4;
-                    doc.text('Action: ' + shot.action, 25, y);
-                    y += 6;
+                    doc.text('What to Shoot: ' + shot.extract, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
+                    y += 3;
+                    doc.text('Focal Point: ' + appData.heroProduct, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
+                    y += 3;
+                    doc.text('Details: ' + shot.details, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
+                    y += 5;
                 });
             });
 
