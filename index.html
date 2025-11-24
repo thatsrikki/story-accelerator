@@ -441,46 +441,41 @@ Use sensory language, cynical wit, authentic voice.`
             document.getElementById('errorMessage').classList.remove('hidden');
         }
 
-        // IMPROVED: Extract sensible title from first complete phrase
         function extractShotTitle(vo, shotNum) {
             const voLower = vo.toLowerCase();
             const sentences = vo.split(/[.!?]/);
             
             if (shotNum === 1) {
-                // First shot: opening concept
                 if (sentences[0]) {
                     const clauses = sentences[0].split(/[,—-]/);
                     let title = clauses[0].trim();
-                    const words = title.split(' ').slice(0, 6);
+                    const words = title.split(' ').slice(0, 8);
                     return words.join(' ').trim();
                 }
                 return 'Opening Moment';
             }
             
             if (shotNum === 2) {
-                // Second shot: build concept
                 if (sentences[1]) {
                     const clauses = sentences[1].split(/[,—-]/);
                     let title = clauses[0].trim();
-                    const words = title.split(' ').slice(0, 6);
+                    const words = title.split(' ').slice(0, 8);
                     return words.join(' ').trim();
                 }
                 return 'Building Anticipation';
             }
             
             if (shotNum === 3) {
-                // Third shot: environment/context
                 if (voLower.includes('grill') || voLower.includes('kitchen')) return 'The Kitchen in Action';
                 if (voLower.includes('counter')) return 'At the Counter';
                 if (voLower.includes('space') || voLower.includes('place')) return 'The Authentic Space';
                 const midPoint = Math.floor(vo.length / 2);
                 const midSection = vo.substring(Math.max(0, midPoint - 50), midPoint + 50);
-                const words = midSection.split(' ').slice(0, 5);
+                const words = midSection.split(' ').slice(0, 6);
                 return words.join(' ').trim() || 'Context & Environment';
             }
             
             if (shotNum === 4) {
-                // Fourth shot: detail/macro shot
                 if (voLower.includes('char')) return 'Char Visible, Quality Evident';
                 if (voLower.includes('bite') || voLower.includes('steam')) return 'The Bite Moment';
                 if (voLower.includes('texture') || voLower.includes('smoke')) return 'Texture & Craftsmanship';
@@ -488,25 +483,22 @@ Use sensory language, cynical wit, authentic voice.`
             }
             
             if (shotNum === 5) {
-                // Fifth shot: final payoff
                 if (voLower.includes('satisfaction') || voLower.includes('joy')) return 'Pure Satisfaction';
                 if (voLower.includes('real') || voLower.includes('authentic')) return 'The Real Deal';
                 if (voLower.includes('know') || voLower.includes('deal')) return 'Never Knowing What\'s Real';
                 const allSentences = vo.split(/[.!?]/).filter(s => s.trim());
                 if (allSentences.length > 0) {
-                    const lastWords = allSentences[allSentences.length - 1].trim().split(' ').slice(0, 6);
+                    const lastWords = allSentences[allSentences.length - 1].trim().split(' ').slice(0, 8);
                     return lastWords.join(' ').trim();
                 }
                 return 'The Final Payoff';
             }
         }
 
-        // IMPROVED: Generate actionable "What to Shoot" instructions
         function generateShootingInstructions(vo, shotNum, heroProduct) {
             const voLower = vo.toLowerCase();
             
             if (shotNum === 1) {
-                // Shot 1: Opening/establishment
                 if (voLower.includes('eyes') || voLower.includes('close')) {
                     return 'Customer with eyes closed, experiencing first taste. Capture emotional reaction and satisfaction beginning.';
                 }
@@ -517,7 +509,6 @@ Use sensory language, cynical wit, authentic voice.`
             }
             
             if (shotNum === 2) {
-                // Shot 2: Transition/build anticipation
                 if (voLower.includes('steam') || voLower.includes('aroma') || voLower.includes('sizzle')) {
                     return 'Approach counter/kitchen area. Show preparation or presentation with steam, heat, or aroma visible.';
                 }
@@ -531,7 +522,6 @@ Use sensory language, cynical wit, authentic voice.`
             }
             
             if (shotNum === 3) {
-                // Shot 3: Context/environment
                 if (voLower.includes('grill') || voLower.includes('kitchen')) {
                     return 'Kitchen/prep area in action. Show team working, grill or cooking equipment, organized workspace.';
                 }
@@ -545,7 +535,6 @@ Use sensory language, cynical wit, authentic voice.`
             }
             
             if (shotNum === 4) {
-                // Shot 4: Close-up/macro detail
                 if (voLower.includes('char')) {
                     return 'Extreme close-up of ' + heroProduct + ' with char marks visible. Show texture, heat, and craftsmanship.';
                 }
@@ -562,7 +551,6 @@ Use sensory language, cynical wit, authentic voice.`
             }
             
             if (shotNum === 5) {
-                // Shot 5: Genuine reaction/payoff
                 if (voLower.includes('satisfaction') || voLower.includes('satisfied')) {
                     return 'Customer\'s satisfied reaction to taste. Show genuine smile, contentment, or nod of approval.';
                 }
@@ -774,106 +762,134 @@ Use sensory language, cynical wit, authentic voice.`
                     let leftY = y;
                     let rightY = y;
 
-                    // Left column
+                    // LEFT COLUMN
                     leftColShots.forEach((shot) => {
                         const leftColX = marginLeft;
 
+                        // Shot header with title wrapping support
                         doc.setFontSize(8);
                         doc.setFont(undefined, 'bold');
-                        doc.text('Shot ' + shot.num + ': ' + shot.label, leftColX, leftY);
-                        leftY += 3;
+                        const shotHeader = 'Shot ' + shot.num + ': ' + shot.label;
+                        const titleLines = doc.splitTextToSize(shotHeader, colWidth - 2);
+                        doc.text(titleLines, leftColX, leftY);
+                        leftY += (titleLines.length * 2.5);
                         
+                        // Time - Bold
                         doc.setFontSize(6.5);
                         doc.setFont(undefined, 'bold');
                         const timeText = 'Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's';
                         doc.text(timeText, leftColX + 1, leftY);
-                        leftY += 2.8;
+                        leftY += 3;
 
+                        // What: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('What:', leftColX + 1, leftY);
+                        leftY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const whatLines = doc.splitTextToSize(shot.extract, colWidth - 6);
-                        doc.text(whatLines, leftColX + 6, leftY);
-                        leftY += (whatLines.length * 2.3) + 0.5;
+                        const whatLines = doc.splitTextToSize(shot.extract, colWidth - 4);
+                        doc.text(whatLines, leftColX + 3, leftY);
+                        leftY += (whatLines.length * 2.2) + 1;
 
+                        // Focal: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Focal:', leftColX + 1, leftY);
+                        leftY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const focalLines = doc.splitTextToSize(shot.focal, colWidth - 8);
-                        doc.text(focalLines, leftColX + 6, leftY);
-                        leftY += (focalLines.length * 2.3) + 0.5;
+                        const focalLines = doc.splitTextToSize(shot.focal, colWidth - 4);
+                        doc.text(focalLines, leftColX + 3, leftY);
+                        leftY += (focalLines.length * 2.2) + 1;
 
+                        // Where: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Where:', leftColX + 1, leftY);
+                        leftY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const whereLines = doc.splitTextToSize(shot.where, colWidth - 8);
-                        doc.text(whereLines, leftColX + 6, leftY);
-                        leftY += (whereLines.length * 2.3) + 0.5;
+                        const whereLines = doc.splitTextToSize(shot.where, colWidth - 4);
+                        doc.text(whereLines, leftColX + 3, leftY);
+                        leftY += (whereLines.length * 2.2) + 1;
 
+                        // Action: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Action:', leftColX + 1, leftY);
+                        leftY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const actionLines = doc.splitTextToSize(shot.action, colWidth - 8);
-                        doc.text(actionLines, leftColX + 6, leftY);
-                        leftY += (actionLines.length * 2.3) + 0.5;
+                        const actionLines = doc.splitTextToSize(shot.action, colWidth - 4);
+                        doc.text(actionLines, leftColX + 3, leftY);
+                        leftY += (actionLines.length * 2.2) + 1;
 
+                        // Details: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Details:', leftColX + 1, leftY);
+                        leftY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const detailLines = doc.splitTextToSize(shot.details, colWidth - 8);
-                        doc.text(detailLines, leftColX + 6, leftY);
-                        leftY += (detailLines.length * 2.3) + 2.5;
+                        const detailLines = doc.splitTextToSize(shot.details, colWidth - 4);
+                        doc.text(detailLines, leftColX + 3, leftY);
+                        leftY += (detailLines.length * 2.2) + 2;
                     });
 
-                    // Right column
+                    // RIGHT COLUMN
                     rightColShots.forEach((shot) => {
                         const rightColX = marginLeft + colWidth + gutterWidth;
 
+                        // Shot header with title wrapping support
                         doc.setFontSize(8);
                         doc.setFont(undefined, 'bold');
-                        doc.text('Shot ' + shot.num + ': ' + shot.label, rightColX, rightY);
-                        rightY += 3;
+                        const shotHeader = 'Shot ' + shot.num + ': ' + shot.label;
+                        const titleLines = doc.splitTextToSize(shotHeader, colWidth - 2);
+                        doc.text(titleLines, rightColX, rightY);
+                        rightY += (titleLines.length * 2.5);
 
+                        // Time - Bold
                         doc.setFontSize(6.5);
                         doc.setFont(undefined, 'bold');
                         const timeText = 'Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's';
                         doc.text(timeText, rightColX + 1, rightY);
-                        rightY += 2.8;
+                        rightY += 3;
 
+                        // What: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('What:', rightColX + 1, rightY);
+                        rightY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const whatLines = doc.splitTextToSize(shot.extract, colWidth - 6);
-                        doc.text(whatLines, rightColX + 6, rightY);
-                        rightY += (whatLines.length * 2.3) + 0.5;
+                        const whatLines = doc.splitTextToSize(shot.extract, colWidth - 4);
+                        doc.text(whatLines, rightColX + 3, rightY);
+                        rightY += (whatLines.length * 2.2) + 1;
 
+                        // Focal: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Focal:', rightColX + 1, rightY);
+                        rightY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const focalLines = doc.splitTextToSize(shot.focal, colWidth - 8);
-                        doc.text(focalLines, rightColX + 6, rightY);
-                        rightY += (focalLines.length * 2.3) + 0.5;
+                        const focalLines = doc.splitTextToSize(shot.focal, colWidth - 4);
+                        doc.text(focalLines, rightColX + 3, rightY);
+                        rightY += (focalLines.length * 2.2) + 1;
 
+                        // Where: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Where:', rightColX + 1, rightY);
+                        rightY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const whereLines = doc.splitTextToSize(shot.where, colWidth - 8);
-                        doc.text(whereLines, rightColX + 6, rightY);
-                        rightY += (whereLines.length * 2.3) + 0.5;
+                        const whereLines = doc.splitTextToSize(shot.where, colWidth - 4);
+                        doc.text(whereLines, rightColX + 3, rightY);
+                        rightY += (whereLines.length * 2.2) + 1;
 
+                        // Action: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Action:', rightColX + 1, rightY);
+                        rightY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const actionLines = doc.splitTextToSize(shot.action, colWidth - 8);
-                        doc.text(actionLines, rightColX + 6, rightY);
-                        rightY += (actionLines.length * 2.3) + 0.5;
+                        const actionLines = doc.splitTextToSize(shot.action, colWidth - 4);
+                        doc.text(actionLines, rightColX + 3, rightY);
+                        rightY += (actionLines.length * 2.2) + 1;
 
+                        // Details: (bold label on separate line, content below)
                         doc.setFont(undefined, 'bold');
                         doc.text('Details:', rightColX + 1, rightY);
+                        rightY += 2.5;
                         doc.setFont(undefined, 'normal');
-                        const detailLines = doc.splitTextToSize(shot.details, colWidth - 8);
-                        doc.text(detailLines, rightColX + 6, rightY);
-                        rightY += (detailLines.length * 2.3) + 2.5;
+                        const detailLines = doc.splitTextToSize(shot.details, colWidth - 4);
+                        doc.text(detailLines, rightColX + 3, rightY);
+                        rightY += (detailLines.length * 2.2) + 2;
                     });
                 }
             });
