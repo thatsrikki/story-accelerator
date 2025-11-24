@@ -911,9 +911,13 @@ Use sensory language (steam, sweat, grit), cynical wit, and authentic voice. Mak
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
+            const pageHeight = 297;
+            const marginBottom = 20;
+            const maxYPos = pageHeight - marginBottom;
             
             const titleHook = document.getElementById('titleHook').value;
             const businessName = document.getElementById('businessName').value;
+            const painPoint = document.getElementById('painPoint').value;
             
             doc.setFontSize(20);
             doc.setFont('helvetica', 'bold');
@@ -924,14 +928,28 @@ Use sensory language (steam, sweat, grit), cynical wit, and authentic voice. Mak
             doc.text(`Business: ${businessName}`, 20, 30);
             doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 36);
             
-            let yPos = 50;
+            let yPos = 48;
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'italic');
+            const painLines = doc.splitTextToSize(`Message: ${painPoint}`, 170);
+            doc.text(painLines, 20, yPos);
+            yPos += (painLines.length * 5) + 15;
+            
             const sceneCount = storyData.scenes.length;
             const baseDuration = document.getElementById('reelLength').value === '15' ? 5 : 
                                document.getElementById('reelLength').value === '30' ? 7.5 : 12;
             const sceneNames = ['The Opening', 'The Hook', 'The Heart', 'The Build', 'The Close'];
+            const settingKey = document.getElementById('locationSetting').value;
+            const visualStyles = {
+                'indoor': 'Intimate interior lighting, close quarters, controlled environment',
+                'outdoor': 'Natural light, urban grit, street-level authenticity',
+                'hybrid': 'Transitions between controlled and raw environments'
+            };
             
             storyData.scenes.forEach((scene, index) => {
-                if (yPos > 250) {
+                const estimatedHeight = 45;
+                
+                if (yPos + estimatedHeight > maxYPos) {
                     doc.addPage();
                     yPos = 20;
                 }
@@ -944,12 +962,21 @@ Use sensory language (steam, sweat, grit), cynical wit, and authentic voice. Mak
                 doc.setFontSize(10);
                 doc.setFont('helvetica', 'normal');
                 doc.text(`Duration: ${Math.round(baseDuration)}s`, 20, yPos);
-                yPos += 7;
+                yPos += 6;
                 
                 doc.setFont('helvetica', 'italic');
                 const voLines = doc.splitTextToSize(`VO: ${scene}`, 170);
                 doc.text(voLines, 20, yPos);
-                yPos += (voLines.length * 5) + 10;
+                yPos += (voLines.length * 5) + 5;
+                
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Visual: ${visualStyles[settingKey] || visualStyles.indoor}`, 20, yPos);
+                yPos += 6;
+                
+                const shotText = `Shots: Wide Establishing (${Math.round(baseDuration/3)}s) → Medium Close-Up (${Math.round(baseDuration/3)}s) → Close-Up Detail (${Math.round(baseDuration/3)}s)`;
+                const shotLines = doc.splitTextToSize(shotText, 170);
+                doc.text(shotLines, 20, yPos);
+                yPos += (shotLines.length * 5) + 12;
             });
             
             doc.addPage();
