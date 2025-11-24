@@ -652,6 +652,15 @@ Use sensory language, cynical wit, authentic voice.`
             });
         }
 
+        function renderTextWithBold(doc, text, x, y, maxWidth, fontSize, fontStyle = 'normal') {
+            // Helper function to render text with wrapping, supporting bold labels
+            doc.setFontSize(fontSize);
+            doc.setFont(undefined, fontStyle);
+            const lines = doc.splitTextToSize(text, maxWidth);
+            doc.text(lines, x, y);
+            return y + (lines.length * fontSize * 0.35);
+        }
+
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'letter');
@@ -663,8 +672,6 @@ Use sensory language, cynical wit, authentic voice.`
             const marginBottom = 12.7;
             const gutterWidth = 5;
             const colWidth = (pageWidth - marginLeft - marginRight - gutterWidth) / 2;
-            const availableHeight = pageHeight - marginTop - marginBottom - 15;
-            const shotHeight = availableHeight / 6; // 6 shots per column
             
             const title = document.getElementById('titleHook').value || 'Storyboard';
             const duration = document.getElementById('reelLength').value === '15' ? 5 : 
@@ -687,7 +694,7 @@ Use sensory language, cynical wit, authentic voice.`
             appData.scenes.forEach((scene, sceneIdx) => {
                 const sceneShots = appData.shotDetails.slice(sceneIdx * 5, (sceneIdx + 1) * 5);
                 
-                // Calculate pages needed for this scene (6 shots per page in 2 columns)
+                // Calculate pages needed for this scene (6 shots per page in 2 columns = 12 shots max per page)
                 const shotsPerPage = 12;
                 const pagesNeeded = Math.ceil(sceneShots.length / shotsPerPage);
 
@@ -735,12 +742,12 @@ Use sensory language, cynical wit, authentic voice.`
                         y += 8;
                     }
 
-                    // Get shots for this page (6 per page, 2 columns)
+                    // Get shots for this page (6 per page, 2 columns = 12 max)
                     const startShotIdx = pageNum * shotsPerPage;
                     const endShotIdx = Math.min(startShotIdx + shotsPerPage, sceneShots.length);
                     const pageShots = sceneShots.slice(startShotIdx, endShotIdx);
 
-                    // Draw 2 columns with 6 shots max per column
+                    // Split shots into left and right columns (6 max per column)
                     const leftColShots = pageShots.slice(0, 6);
                     const rightColShots = pageShots.slice(6, 12);
 
@@ -749,68 +756,118 @@ Use sensory language, cynical wit, authentic voice.`
 
                     // Draw left column
                     leftColShots.forEach((shot) => {
+                        const leftColX = marginLeft;
+
+                        // Shot header
                         doc.setFontSize(8);
                         doc.setFont(undefined, 'bold');
-                        doc.text('Shot ' + shot.num + ': ' + shot.label, marginLeft, leftY);
+                        doc.text('Shot ' + shot.num + ': ' + shot.label, leftColX, leftY);
                         leftY += 3;
                         
-                        doc.setFont(undefined, 'normal');
+                        // Time (bold)
                         doc.setFontSize(6.5);
-                        doc.text('Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's', marginLeft + 1, leftY);
-                        leftY += 2.5;
-                        
-                        const whatsToShoot = doc.splitTextToSize('What: ' + shot.extract, colWidth - 2);
-                        doc.text(whatsToShoot, marginLeft + 1, leftY);
-                        leftY += (whatsToShoot.length * 2.3);
-                        
-                        const focalLines = doc.splitTextToSize('Focal: ' + shot.focal, colWidth - 2);
-                        doc.text(focalLines, marginLeft + 1, leftY);
-                        leftY += (focalLines.length * 2.3);
-                        
-                        const whereLines = doc.splitTextToSize('Where: ' + shot.where, colWidth - 2);
-                        doc.text(whereLines, marginLeft + 1, leftY);
-                        leftY += (whereLines.length * 2.3);
-                        
-                        const actionLines = doc.splitTextToSize('Action: ' + shot.action, colWidth - 2);
-                        doc.text(actionLines, marginLeft + 1, leftY);
-                        leftY += (actionLines.length * 2.3);
-                        
-                        const detailLines = doc.splitTextToSize('Details: ' + shot.details, colWidth - 2);
-                        doc.text(detailLines, marginLeft + 1, leftY);
-                        leftY += (detailLines.length * 2.3) + 2;
+                        doc.setFont(undefined, 'bold');
+                        const timeText = 'Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's';
+                        doc.text(timeText, leftColX + 1, leftY);
+                        leftY += 2.8;
+
+                        // What (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('What:', leftColX + 1, leftY);
+                        doc.setFont(undefined, 'normal');
+                        const whatLines = doc.splitTextToSize(shot.extract, colWidth - 6);
+                        doc.text(whatLines, leftColX + 6, leftY);
+                        leftY += (whatLines.length * 2.3) + 0.5;
+
+                        // Focal (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Focal:', leftColX + 1, leftY);
+                        doc.setFont(undefined, 'normal');
+                        const focalLines = doc.splitTextToSize(shot.focal, colWidth - 8);
+                        doc.text(focalLines, leftColX + 6, leftY);
+                        leftY += (focalLines.length * 2.3) + 0.5;
+
+                        // Where (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Where:', leftColX + 1, leftY);
+                        doc.setFont(undefined, 'normal');
+                        const whereLines = doc.splitTextToSize(shot.where, colWidth - 8);
+                        doc.text(whereLines, leftColX + 6, leftY);
+                        leftY += (whereLines.length * 2.3) + 0.5;
+
+                        // Action (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Action:', leftColX + 1, leftY);
+                        doc.setFont(undefined, 'normal');
+                        const actionLines = doc.splitTextToSize(shot.action, colWidth - 8);
+                        doc.text(actionLines, leftColX + 6, leftY);
+                        leftY += (actionLines.length * 2.3) + 0.5;
+
+                        // Details (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Details:', leftColX + 1, leftY);
+                        doc.setFont(undefined, 'normal');
+                        const detailLines = doc.splitTextToSize(shot.details, colWidth - 8);
+                        doc.text(detailLines, leftColX + 6, leftY);
+                        leftY += (detailLines.length * 2.3) + 2.5;
                     });
 
                     // Draw right column
                     rightColShots.forEach((shot) => {
+                        const rightColX = marginLeft + colWidth + gutterWidth;
+
+                        // Shot header
                         doc.setFontSize(8);
                         doc.setFont(undefined, 'bold');
-                        doc.text('Shot ' + shot.num + ': ' + shot.label, marginLeft + colWidth + gutterWidth, rightY);
+                        doc.text('Shot ' + shot.num + ': ' + shot.label, rightColX, rightY);
                         rightY += 3;
-                        
-                        doc.setFont(undefined, 'normal');
+
+                        // Time (bold)
                         doc.setFontSize(6.5);
-                        doc.text('Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's', marginLeft + colWidth + gutterWidth + 1, rightY);
-                        rightY += 2.5;
-                        
-                        const whatsToShoot = doc.splitTextToSize('What: ' + shot.extract, colWidth - 2);
-                        doc.text(whatsToShoot, marginLeft + colWidth + gutterWidth + 1, rightY);
-                        rightY += (whatsToShoot.length * 2.3);
-                        
-                        const focalLines = doc.splitTextToSize('Focal: ' + shot.focal, colWidth - 2);
-                        doc.text(focalLines, marginLeft + colWidth + gutterWidth + 1, rightY);
-                        rightY += (focalLines.length * 2.3);
-                        
-                        const whereLines = doc.splitTextToSize('Where: ' + shot.where, colWidth - 2);
-                        doc.text(whereLines, marginLeft + colWidth + gutterWidth + 1, rightY);
-                        rightY += (whereLines.length * 2.3);
-                        
-                        const actionLines = doc.splitTextToSize('Action: ' + shot.action, colWidth - 2);
-                        doc.text(actionLines, marginLeft + colWidth + gutterWidth + 1, rightY);
-                        rightY += (actionLines.length * 2.3);
-                        
-                        const detailLines = doc.splitTextToSize('Details: ' + shot.details, colWidth - 2);
-                        doc.text(detailLines, marginLeft + colWidth + gutterWidth + 1, rightY);
-                        rightY += (detailLines.length * 2.3) + 2;
+                        doc.setFont(undefined, 'bold');
+                        const timeText = 'Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's';
+                        doc.text(timeText, rightColX + 1, rightY);
+                        rightY += 2.8;
+
+                        // What (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('What:', rightColX + 1, rightY);
+                        doc.setFont(undefined, 'normal');
+                        const whatLines = doc.splitTextToSize(shot.extract, colWidth - 6);
+                        doc.text(whatLines, rightColX + 6, rightY);
+                        rightY += (whatLines.length * 2.3) + 0.5;
+
+                        // Focal (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Focal:', rightColX + 1, rightY);
+                        doc.setFont(undefined, 'normal');
+                        const focalLines = doc.splitTextToSize(shot.focal, colWidth - 8);
+                        doc.text(focalLines, rightColX + 6, rightY);
+                        rightY += (focalLines.length * 2.3) + 0.5;
+
+                        // Where (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Where:', rightColX + 1, rightY);
+                        doc.setFont(undefined, 'normal');
+                        const whereLines = doc.splitTextToSize(shot.where, colWidth - 8);
+                        doc.text(whereLines, rightColX + 6, rightY);
+                        rightY += (whereLines.length * 2.3) + 0.5;
+
+                        // Action (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Action:', rightColX + 1, rightY);
+                        doc.setFont(undefined, 'normal');
+                        const actionLines = doc.splitTextToSize(shot.action, colWidth - 8);
+                        doc.text(actionLines, rightColX + 6, rightY);
+                        rightY += (actionLines.length * 2.3) + 0.5;
+
+                        // Details (bold label, wrapped content)
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Details:', rightColX + 1, rightY);
+                        doc.setFont(undefined, 'normal');
+                        const detailLines = doc.splitTextToSize(shot.details, colWidth - 8);
+                        doc.text(detailLines, rightColX + 6, rightY);
+                        rightY += (detailLines.length * 2.3) + 2.5;
                     });
                 }
             });
