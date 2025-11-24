@@ -305,7 +305,7 @@
 
     <script>
         let currentPhase = 1;
-        let appData = { scenes: [], heroProduct: '', businessName: '' };
+        let appData = { scenes: [], heroProduct: '', businessName: '', shotDetails: [] };
 
         function nextPhase() {
             if (currentPhase < 4) {
@@ -441,74 +441,139 @@ Use sensory language, cynical wit, authentic voice.`
             document.getElementById('errorMessage').classList.remove('hidden');
         }
 
-        function extractShotsFromVO(vo, sceneNum, heroProduct, duration) {
-            const shotCount = 5;
-            const secondsPerShot = Math.round(duration / shotCount);
+        function extractShotsFromVO(vo, sceneNum, heroProduct) {
+            // Extract 5 specific shots directly from the VO narrative
+            const voLower = vo.toLowerCase();
+            const words = vo.split(' ');
             
+            // Find key phrases and quotes from VO for shot extraction
             const shots = [
                 {
                     num: 1,
-                    label: 'Opening/Hook',
-                    timeStart: 0,
-                    timeEnd: secondsPerShot,
-                    extract: 'First impression, setup',
-                    focal: 'Establish context',
-                    where: 'Opening location',
-                    action: 'Set the scene',
-                    details: 'Authenticity and atmosphere',
-                    broll: 'Wide establishing shots'
+                    label: extractFirstConcept(vo),
+                    extract: extractFirstThirdVO(vo),
+                    focal: 'Opening context and ' + heroProduct,
+                    where: 'Business entrance or first visible area',
+                    action: 'Introduce the setting',
+                    details: 'First impression, authenticity, atmosphere, signage',
+                    broll: 'Wide establishing exterior/interior shots'
                 },
                 {
                     num: 2,
-                    label: 'Transition/Approach',
-                    timeStart: secondsPerShot,
-                    timeEnd: secondsPerShot * 2,
-                    extract: 'Moving toward subject',
-                    focal: 'Hero product becoming visible',
-                    where: 'Approach area',
-                    action: 'Build anticipation',
-                    details: 'Sensory moments',
-                    broll: 'Medium approach shots'
+                    label: extractSecondConcept(vo),
+                    extract: extractSecondThirdVO(vo),
+                    focal: heroProduct + ' becoming visible',
+                    where: 'Transition area, approach to counter/main area',
+                    action: 'Build anticipation moving toward hero product',
+                    details: 'Sensory moments - heat, aroma, sound, anticipation',
+                    broll: 'Medium shots of approach, doorway, counter visibility'
                 },
                 {
                     num: 3,
-                    label: 'Context/Environment',
-                    timeStart: secondsPerShot * 2,
-                    timeEnd: secondsPerShot * 3,
-                    extract: 'Setting and atmosphere',
-                    focal: 'Hero product in environment',
-                    where: 'Main location',
-                    action: 'Show the space',
-                    details: 'Team, tools, authenticity',
-                    broll: 'Wide interior/environment shots'
+                    label: extractThirdConcept(vo),
+                    extract: 'Environment and setting details',
+                    focal: heroProduct + ' in its natural environment',
+                    where: 'Main workspace - kitchen, counter, or service area',
+                    action: 'Show the space and team in action',
+                    details: 'Team work, tools, preparation, authenticity, environment',
+                    broll: 'Wide shots of kitchen/workspace, people, activity'
                 },
                 {
                     num: 4,
-                    label: 'Close-Up/Detail',
-                    timeStart: secondsPerShot * 3,
-                    timeEnd: secondsPerShot * 4,
-                    extract: 'Product detail and texture',
+                    label: 'The Detail Shot',
+                    extract: extractQualityLanguage(vo),
                     focal: 'EXTREME CLOSE-UP of ' + heroProduct,
-                    where: 'Macro detail zone',
-                    action: 'Reveal quality',
-                    details: 'Texture, color, craftsmanship',
-                    broll: 'Macro and detail shots'
+                    where: 'Macro detail zone - grill, plating, hand, or product',
+                    action: 'Reveal quality and craftsmanship with macro focus',
+                    details: extractSensoryDetails(vo),
+                    broll: 'Macro/detail shots, extreme close-ups, texture focus'
                 },
                 {
                     num: 5,
-                    label: 'Payoff/Reaction',
-                    timeStart: secondsPerShot * 4,
-                    timeEnd: secondsPerShot * 5,
-                    extract: 'Human moment or satisfaction',
-                    focal: 'Genuine reaction or result',
-                    where: 'Natural setting',
-                    action: 'Capture authenticity',
-                    details: 'Real emotion and satisfaction',
-                    broll: 'Customer/user reaction shots'
+                    label: extractFinalConcept(vo),
+                    extract: extractFinalThirdVO(vo),
+                    focal: 'Genuine human reaction or completion',
+                    where: 'Natural setting - eating, enjoying, reacting',
+                    action: 'Capture authentic moment and satisfaction',
+                    details: 'Real emotion, satisfaction, fulfillment, payoff',
+                    broll: 'Customer reactions, celebration, owner pride, legacy'
                 }
             ];
 
             return shots;
+        }
+
+        function extractFirstConcept(vo) {
+            const sentences = vo.split(/[.!?]/);
+            if (sentences[0]) {
+                const words = sentences[0].split(' ');
+                return words.slice(0, 5).join(' ').trim();
+            }
+            return 'Opening Hook';
+        }
+
+        function extractSecondConcept(vo) {
+            const sentences = vo.split(/[.!?]/);
+            if (sentences[1]) {
+                const words = sentences[1].trim().split(' ');
+                return words.slice(0, 5).join(' ').trim();
+            }
+            return 'Building Moment';
+        }
+
+        function extractThirdConcept(vo) {
+            const midPoint = Math.floor(vo.length / 2);
+            const midSection = vo.substring(midPoint, midPoint + 100);
+            const words = midSection.split(' ').slice(0, 4);
+            return words.join(' ').trim() || 'Context Reveal';
+        }
+
+        function extractFinalConcept(vo) {
+            const sentences = vo.split(/[.!?]/).filter(s => s.trim());
+            const lastSentence = sentences[sentences.length - 1];
+            if (lastSentence) {
+                const words = lastSentence.trim().split(' ').slice(0, 4);
+                return words.join(' ').trim();
+            }
+            return 'Final Payoff';
+        }
+
+        function extractFirstThirdVO(vo) {
+            const length = Math.floor(vo.length / 3);
+            return vo.substring(0, length).trim() + '...';
+        }
+
+        function extractSecondThirdVO(vo) {
+            const start = Math.floor(vo.length / 3);
+            const end = Math.floor(vo.length * 2 / 3);
+            return vo.substring(start, end).trim() + '...';
+        }
+
+        function extractFinalThirdVO(vo) {
+            const start = Math.floor(vo.length * 2 / 3);
+            return '...' + vo.substring(start).trim();
+        }
+
+        function extractQualityLanguage(vo) {
+            const qualityWords = ['char', 'crisp', 'sizzle', 'flame', 'grill', 'steam', 'smoke', 'texture', 'color', 'fresh', 'bite', 'taste', 'flavor', 'juicy', 'tender'];
+            for (let word of qualityWords) {
+                if (vo.toLowerCase().includes(word)) {
+                    return 'Close-up capturing ' + word + ' and texture details';
+                }
+            }
+            return 'Macro close-up revealing product quality and detail';
+        }
+
+        function extractSensoryDetails(vo) {
+            const sensoryTerms = ['char', 'smoke', 'heat', 'flame', 'sizzle', 'aroma', 'steam', 'texture', 'glisten', 'moisture'];
+            let details = 'Visible quality details';
+            for (let term of sensoryTerms) {
+                if (vo.toLowerCase().includes(term)) {
+                    details += ' - ' + term + ' visible';
+                    break;
+                }
+            }
+            return details + ', craftsmanship evident, sensory appeal';
         }
 
         function buildStoryboard() {
@@ -518,15 +583,19 @@ Use sensory language, cynical wit, authentic voice.`
                            document.getElementById('reelLength').value === '30' ? 7.5 : 12;
             const sceneNames = ['The Opening', 'The Hook', 'The Heart', 'The Build', 'The Close'];
 
+            appData.shotDetails = [];
+
             appData.scenes.forEach((scene, i) => {
                 const sceneDiv = document.createElement('div');
                 sceneDiv.className = 'scene-block';
                 
                 const title = `Scene ${i + 1}: ${sceneNames[i]}`;
-                const shots = extractShotsFromVO(scene.vo, i + 1, appData.heroProduct, duration);
+                const shots = extractShotsFromVO(scene.vo, i + 1, appData.heroProduct);
+                appData.shotDetails.push(...shots);
                 
                 let shotsGridHTML = '<div class="shots-grid">';
                 shots.forEach(shot => {
+                    const timePerShot = Math.round(duration / 5);
                     shotsGridHTML += `
                         <div class="shot-card">
                             <div class="shot-card-number">Shot ${shot.num}</div>
@@ -534,7 +603,7 @@ Use sensory language, cynical wit, authentic voice.`
                             <div class="shot-card-content">
                                 <div class="shot-card-item">
                                     <div class="shot-card-item-label">Time</div>
-                                    <div class="shot-card-item-value">${shot.timeStart}-${shot.timeEnd}s</div>
+                                    <div class="shot-card-item-value">${(shot.num - 1) * timePerShot}-${shot.num * timePerShot}s</div>
                                 </div>
                                 <div class="shot-card-item">
                                     <div class="shot-card-item-label">What to Shoot</div>
@@ -600,8 +669,7 @@ Use sensory language, cynical wit, authentic voice.`
             const duration = document.getElementById('reelLength').value === '15' ? 5 : 
                            document.getElementById('reelLength').value === '30' ? 7.5 : 12;
             const sceneNames = ['The Opening', 'The Hook', 'The Heart', 'The Build', 'The Close'];
-            const shotCount = 5;
-            const secondsPerShot = Math.round(duration / shotCount);
+            const timePerShot = Math.round(duration / 5);
 
             // Cover Page
             doc.setFontSize(22);
@@ -632,7 +700,7 @@ Use sensory language, cynical wit, authentic voice.`
                 // Scene meta
                 doc.setFontSize(9);
                 doc.setFont(undefined, 'normal');
-                const metaText = 'Duration: ' + Math.round(duration) + 's total | ~' + secondsPerShot + 's per shot';
+                const metaText = 'Duration: ' + Math.round(duration) + 's total | ~' + timePerShot + 's per shot';
                 doc.text(metaText, marginLeft, y);
                 y += 8;
 
@@ -648,24 +716,19 @@ Use sensory language, cynical wit, authentic voice.`
                 doc.text(voLines, marginLeft, y);
                 y += (voLines.length * 3.5) + 6;
 
+                // Get shot details for this scene
+                const sceneShots = appData.shotDetails.slice(sceneIdx * 5, (sceneIdx + 1) * 5);
+
                 // Shot breakdown
                 doc.setFontSize(10);
                 doc.setFont(undefined, 'bold');
                 doc.text('Shot Breakdown (Extracted from VO):', marginLeft, y);
                 y += 7;
 
-                const shots = [
-                    { num: 1, label: 'Opening/Hook', extract: 'First impression, setup', details: 'Authenticity and atmosphere' },
-                    { num: 2, label: 'Transition/Approach', extract: 'Moving toward subject', details: 'Sensory moments and anticipation' },
-                    { num: 3, label: 'Context/Environment', extract: 'Setting and atmosphere', details: 'Team, tools, and authenticity' },
-                    { num: 4, label: 'Close-Up/Detail', extract: 'Product detail and texture', details: 'Color, texture, craftsmanship' },
-                    { num: 5, label: 'Payoff/Reaction', extract: 'Human moment or satisfaction', details: 'Real emotion and satisfaction' }
-                ];
-
                 doc.setFontSize(8);
                 doc.setFont(undefined, 'normal');
                 
-                shots.forEach((shot, shotIdx) => {
+                sceneShots.forEach((shot) => {
                     // Check if we need a new page
                     if (y > pageHeight - marginBottom - 20) {
                         doc.addPage();
@@ -676,18 +739,28 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.setFont(undefined, 'bold');
                         doc.text(sceneTitle + ' (continued)', marginLeft, y);
                         y += 6;
+                        doc.setFontSize(8);
+                        doc.setFont(undefined, 'normal');
                     }
                     
                     doc.setFont(undefined, 'bold');
-                    doc.text('Shot ' + shot.num + ': ' + shot.label + ' (' + (shot.num - 1) * secondsPerShot + '-' + shot.num * secondsPerShot + 's)', marginLeft, y);
+                    doc.text('Shot ' + shot.num + ': ' + shot.label, marginLeft, y);
                     y += 4;
                     
                     doc.setFont(undefined, 'normal');
+                    doc.text('Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's', marginLeft + 3, y);
+                    y += 3;
                     doc.text('What to Shoot: ' + shot.extract, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
                     y += 3;
-                    doc.text('Focal Point: ' + appData.heroProduct, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
+                    doc.text('Focal Point: ' + shot.focal, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
+                    y += 3;
+                    doc.text('Where: ' + shot.where, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
+                    y += 3;
+                    doc.text('Action: ' + shot.action, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
                     y += 3;
                     doc.text('Details: ' + shot.details, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
+                    y += 3;
+                    doc.text('B-roll: ' + shot.broll, marginLeft + 3, y, { maxWidth: pageContentWidth - 6 });
                     y += 5;
                 });
             });
