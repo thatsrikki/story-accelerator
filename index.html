@@ -441,137 +441,174 @@ Use sensory language, cynical wit, authentic voice.`
             document.getElementById('errorMessage').classList.remove('hidden');
         }
 
-        function extractShotsFromVO(vo, sceneNum, heroProduct) {
+        // IMPROVED: Extract sensible title from first complete phrase
+        function extractShotTitle(vo, shotNum) {
             const voLower = vo.toLowerCase();
-            const words = vo.split(' ');
+            const sentences = vo.split(/[.!?]/);
             
-            const shots = [
-                {
-                    num: 1,
-                    label: extractFirstConcept(vo),
-                    extract: extractFirstThirdVO(vo),
-                    focal: 'Opening context and ' + heroProduct,
-                    where: 'Business entrance or first visible area',
-                    action: 'Introduce the setting',
-                    details: 'First impression, authenticity, atmosphere, signage',
-                    broll: 'Wide establishing exterior/interior shots'
-                },
-                {
-                    num: 2,
-                    label: extractSecondConcept(vo),
-                    extract: extractSecondThirdVO(vo),
-                    focal: heroProduct + ' becoming visible',
-                    where: 'Transition area, approach to counter/main area',
-                    action: 'Build anticipation moving toward hero product',
-                    details: 'Sensory moments - heat, aroma, sound, anticipation',
-                    broll: 'Medium shots of approach, doorway, counter visibility'
-                },
-                {
-                    num: 3,
-                    label: extractThirdConcept(vo),
-                    extract: 'Environment and setting details',
-                    focal: heroProduct + ' in its natural environment',
-                    where: 'Main workspace - kitchen, counter, or service area',
-                    action: 'Show the space and team in action',
-                    details: 'Team work, tools, preparation, authenticity, environment',
-                    broll: 'Wide shots of kitchen/workspace, people, activity'
-                },
-                {
-                    num: 4,
-                    label: 'The Detail Shot',
-                    extract: extractQualityLanguage(vo),
-                    focal: 'EXTREME CLOSE-UP of ' + heroProduct,
-                    where: 'Macro detail zone - grill, plating, hand, or product',
-                    action: 'Reveal quality and craftsmanship with macro focus',
-                    details: extractSensoryDetails(vo),
-                    broll: 'Macro/detail shots, extreme close-ups, texture focus'
-                },
-                {
-                    num: 5,
-                    label: extractFinalConcept(vo),
-                    extract: extractFinalThirdVO(vo),
-                    focal: 'Genuine human reaction or completion',
-                    where: 'Natural setting - eating, enjoying, reacting',
-                    action: 'Capture authentic moment and satisfaction',
-                    details: 'Real emotion, satisfaction, fulfillment, payoff',
-                    broll: 'Customer reactions, celebration, owner pride, legacy'
+            if (shotNum === 1) {
+                // First shot: opening concept
+                if (sentences[0]) {
+                    const clauses = sentences[0].split(/[,—-]/);
+                    let title = clauses[0].trim();
+                    const words = title.split(' ').slice(0, 6);
+                    return words.join(' ').trim();
                 }
-            ];
+                return 'Opening Moment';
+            }
+            
+            if (shotNum === 2) {
+                // Second shot: build concept
+                if (sentences[1]) {
+                    const clauses = sentences[1].split(/[,—-]/);
+                    let title = clauses[0].trim();
+                    const words = title.split(' ').slice(0, 6);
+                    return words.join(' ').trim();
+                }
+                return 'Building Anticipation';
+            }
+            
+            if (shotNum === 3) {
+                // Third shot: environment/context
+                if (voLower.includes('grill') || voLower.includes('kitchen')) return 'The Kitchen in Action';
+                if (voLower.includes('counter')) return 'At the Counter';
+                if (voLower.includes('space') || voLower.includes('place')) return 'The Authentic Space';
+                const midPoint = Math.floor(vo.length / 2);
+                const midSection = vo.substring(Math.max(0, midPoint - 50), midPoint + 50);
+                const words = midSection.split(' ').slice(0, 5);
+                return words.join(' ').trim() || 'Context & Environment';
+            }
+            
+            if (shotNum === 4) {
+                // Fourth shot: detail/macro shot
+                if (voLower.includes('char')) return 'Char Visible, Quality Evident';
+                if (voLower.includes('bite') || voLower.includes('steam')) return 'The Bite Moment';
+                if (voLower.includes('texture') || voLower.includes('smoke')) return 'Texture & Craftsmanship';
+                return 'The Detail Shot';
+            }
+            
+            if (shotNum === 5) {
+                // Fifth shot: final payoff
+                if (voLower.includes('satisfaction') || voLower.includes('joy')) return 'Pure Satisfaction';
+                if (voLower.includes('real') || voLower.includes('authentic')) return 'The Real Deal';
+                if (voLower.includes('know') || voLower.includes('deal')) return 'Never Knowing What\'s Real';
+                const allSentences = vo.split(/[.!?]/).filter(s => s.trim());
+                if (allSentences.length > 0) {
+                    const lastWords = allSentences[allSentences.length - 1].trim().split(' ').slice(0, 6);
+                    return lastWords.join(' ').trim();
+                }
+                return 'The Final Payoff';
+            }
+        }
 
+        // IMPROVED: Generate actionable "What to Shoot" instructions
+        function generateShootingInstructions(vo, shotNum, heroProduct) {
+            const voLower = vo.toLowerCase();
+            
+            if (shotNum === 1) {
+                // Shot 1: Opening/establishment
+                if (voLower.includes('eyes') || voLower.includes('close')) {
+                    return 'Customer with eyes closed, experiencing first taste. Capture emotional reaction and satisfaction beginning.';
+                }
+                if (voLower.includes('enter') || voLower.includes('walk')) {
+                    return 'Customer entering business. Show entrance moment and first impression of space.';
+                }
+                return 'Establish business entrance and opening moment. Show first impression and atmosphere.';
+            }
+            
+            if (shotNum === 2) {
+                // Shot 2: Transition/build anticipation
+                if (voLower.includes('steam') || voLower.includes('aroma') || voLower.includes('sizzle')) {
+                    return 'Approach counter/kitchen area. Show preparation or presentation with steam, heat, or aroma visible.';
+                }
+                if (voLower.includes('grill') || voLower.includes('cook')) {
+                    return 'Show cooking in progress. Capture grill activity, flames, or preparation motion building excitement.';
+                }
+                if (voLower.includes('plate') || voLower.includes('hand')) {
+                    return 'Food being handed over or plated. Show the handoff moment and build toward the reveal.';
+                }
+                return 'Build anticipation toward ' + heroProduct + '. Show movement and sensory buildup.';
+            }
+            
+            if (shotNum === 3) {
+                // Shot 3: Context/environment
+                if (voLower.includes('grill') || voLower.includes('kitchen')) {
+                    return 'Kitchen/prep area in action. Show team working, grill or cooking equipment, organized workspace.';
+                }
+                if (voLower.includes('counter')) {
+                    return 'Counter area with team visible. Show prep work, organization, and professional execution.';
+                }
+                if (voLower.includes('space') || voLower.includes('place') || voLower.includes('30')) {
+                    return 'Wide shot of business workspace. Show authenticity, team, tools, and the environment where ' + heroProduct + ' is made.';
+                }
+                return 'Show workspace and team. Capture the environment and process behind ' + heroProduct + '.';
+            }
+            
+            if (shotNum === 4) {
+                // Shot 4: Close-up/macro detail
+                if (voLower.includes('char')) {
+                    return 'Extreme close-up of ' + heroProduct + ' with char marks visible. Show texture, heat, and craftsmanship.';
+                }
+                if (voLower.includes('bite') || voLower.includes('mouth')) {
+                    return 'Macro shot of bite being taken. Show texture, steam, juices, and first contact moment.';
+                }
+                if (voLower.includes('smoke') || voLower.includes('steam') || voLower.includes('flame')) {
+                    return 'Extreme close-up showing smoke, steam, or flame effects. Reveal quality and heat in the product.';
+                }
+                if (voLower.includes('color') || voLower.includes('fresh')) {
+                    return 'Macro detail of ' + heroProduct + '. Show vibrant colors, freshness, texture, and visual appeal.';
+                }
+                return 'Extreme close-up of ' + heroProduct + '. Reveal craftsmanship, texture, and quality details.';
+            }
+            
+            if (shotNum === 5) {
+                // Shot 5: Genuine reaction/payoff
+                if (voLower.includes('satisfaction') || voLower.includes('satisfied')) {
+                    return 'Customer\'s satisfied reaction to taste. Show genuine smile, contentment, or nod of approval.';
+                }
+                if (voLower.includes('real') || voLower.includes('authentic') || voLower.includes('mean')) {
+                    return 'Authentic human moment of enjoyment. Capture real emotion and genuine fulfillment.';
+                }
+                if (voLower.includes('taste') || voLower.includes('bite') || voLower.includes('eat')) {
+                    return 'Customer eating and visibly enjoying. Show appreciation, genuine reaction, and satisfaction with bite.';
+                }
+                if (voLower.includes('know')) {
+                    return 'Final moment revealing the payoff. Show realization, satisfaction, or the lasting impression moment.';
+                }
+                return 'Genuine human reaction and authentic fulfillment moment. Capture satisfaction and payoff.';
+            }
+        }
+
+        function extractShotsFromVO(vo, sceneNum, heroProduct) {
+            const shots = [];
+            for (let i = 1; i <= 5; i++) {
+                shots.push({
+                    num: i,
+                    label: extractShotTitle(vo, i),
+                    extract: generateShootingInstructions(vo, i, heroProduct),
+                    focal: i === 4 ? 'EXTREME CLOSE-UP of ' + heroProduct : 
+                           i === 3 ? heroProduct + ' in its natural workspace environment' :
+                           i === 2 ? heroProduct + ' becoming visible and building excitement' :
+                           'Opening context and ' + heroProduct,
+                    where: i === 4 ? 'Macro detail zone - extreme close up' :
+                           i === 3 ? 'Main workspace - kitchen, counter, or prep area' :
+                           i === 2 ? 'Transition area, approach to counter/main area' :
+                           'Business entrance or first visible area',
+                    action: i === 4 ? 'Reveal quality and craftsmanship with macro focus' :
+                            i === 3 ? 'Show the space and team in action' :
+                            i === 2 ? 'Build anticipation moving toward hero product' :
+                            'Introduce the setting',
+                    details: i === 4 ? 'Texture, color, craftsmanship, sensory detail visible' :
+                             i === 3 ? 'Team work, tools, preparation, authenticity, environment' :
+                             i === 2 ? 'Sensory moments - heat, aroma, sound, anticipation' :
+                             'First impression, authenticity, atmosphere, signage',
+                    broll: i === 4 ? 'Macro/detail shots, extreme close-ups, texture focus' :
+                           i === 3 ? 'Wide shots of kitchen/workspace, people, activity' :
+                           i === 2 ? 'Medium shots of approach, doorway, counter visibility' :
+                           'Wide establishing exterior/interior shots'
+                });
+            }
             return shots;
-        }
-
-        function extractFirstConcept(vo) {
-            const sentences = vo.split(/[.!?]/);
-            if (sentences[0]) {
-                const words = sentences[0].split(' ');
-                return words.slice(0, 5).join(' ').trim();
-            }
-            return 'Opening Hook';
-        }
-
-        function extractSecondConcept(vo) {
-            const sentences = vo.split(/[.!?]/);
-            if (sentences[1]) {
-                const words = sentences[1].trim().split(' ');
-                return words.slice(0, 5).join(' ').trim();
-            }
-            return 'Building Moment';
-        }
-
-        function extractThirdConcept(vo) {
-            const midPoint = Math.floor(vo.length / 2);
-            const midSection = vo.substring(midPoint, midPoint + 100);
-            const words = midSection.split(' ').slice(0, 4);
-            return words.join(' ').trim() || 'Context Reveal';
-        }
-
-        function extractFinalConcept(vo) {
-            const sentences = vo.split(/[.!?]/).filter(s => s.trim());
-            const lastSentence = sentences[sentences.length - 1];
-            if (lastSentence) {
-                const words = lastSentence.trim().split(' ').slice(0, 4);
-                return words.join(' ').trim();
-            }
-            return 'Final Payoff';
-        }
-
-        function extractFirstThirdVO(vo) {
-            const length = Math.floor(vo.length / 3);
-            return vo.substring(0, length).trim() + '...';
-        }
-
-        function extractSecondThirdVO(vo) {
-            const start = Math.floor(vo.length / 3);
-            const end = Math.floor(vo.length * 2 / 3);
-            return vo.substring(start, end).trim() + '...';
-        }
-
-        function extractFinalThirdVO(vo) {
-            const start = Math.floor(vo.length * 2 / 3);
-            return '...' + vo.substring(start).trim();
-        }
-
-        function extractQualityLanguage(vo) {
-            const qualityWords = ['char', 'crisp', 'sizzle', 'flame', 'grill', 'steam', 'smoke', 'texture', 'color', 'fresh', 'bite', 'taste', 'flavor', 'juicy', 'tender'];
-            for (let word of qualityWords) {
-                if (vo.toLowerCase().includes(word)) {
-                    return 'Close-up capturing ' + word + ' and texture details';
-                }
-            }
-            return 'Macro close-up revealing product quality and detail';
-        }
-
-        function extractSensoryDetails(vo) {
-            const sensoryTerms = ['char', 'smoke', 'heat', 'flame', 'sizzle', 'aroma', 'steam', 'texture', 'glisten', 'moisture'];
-            let details = 'Visible quality details';
-            for (let term of sensoryTerms) {
-                if (vo.toLowerCase().includes(term)) {
-                    details += ' - ' + term + ' visible';
-                    break;
-                }
-            }
-            return details + ', craftsmanship evident, sensory appeal';
         }
 
         function buildStoryboard() {
@@ -652,15 +689,6 @@ Use sensory language, cynical wit, authentic voice.`
             });
         }
 
-        function renderTextWithBold(doc, text, x, y, maxWidth, fontSize, fontStyle = 'normal') {
-            // Helper function to render text with wrapping, supporting bold labels
-            doc.setFontSize(fontSize);
-            doc.setFont(undefined, fontStyle);
-            const lines = doc.splitTextToSize(text, maxWidth);
-            doc.text(lines, x, y);
-            return y + (lines.length * fontSize * 0.35);
-        }
-
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'letter');
@@ -694,7 +722,6 @@ Use sensory language, cynical wit, authentic voice.`
             appData.scenes.forEach((scene, sceneIdx) => {
                 const sceneShots = appData.shotDetails.slice(sceneIdx * 5, (sceneIdx + 1) * 5);
                 
-                // Calculate pages needed for this scene (6 shots per page in 2 columns = 12 shots max per page)
                 const shotsPerPage = 12;
                 const pagesNeeded = Math.ceil(sceneShots.length / shotsPerPage);
 
@@ -702,14 +729,12 @@ Use sensory language, cynical wit, authentic voice.`
                     doc.addPage();
                     let y = marginTop;
 
-                    // Scene title
                     doc.setFontSize(14);
                     doc.setFont(undefined, 'bold');
                     const sceneTitle = 'Scene ' + (sceneIdx + 1) + ': ' + sceneNames[sceneIdx];
                     doc.text(sceneTitle, marginLeft, y);
                     y += 8;
 
-                    // Scene meta (only on first page of scene)
                     if (pageNum === 0) {
                         doc.setFontSize(9);
                         doc.setFont(undefined, 'normal');
@@ -717,7 +742,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(metaText, marginLeft, y);
                         y += 8;
 
-                        // Narrative VO (only on first page of scene)
                         doc.setFontSize(10);
                         doc.setFont(undefined, 'bold');
                         doc.text('Narrative VO:', marginLeft, y);
@@ -729,49 +753,42 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(voLines, marginLeft, y);
                         y += (voLines.length * 3) + 6;
 
-                        // Shot breakdown header
                         doc.setFontSize(10);
                         doc.setFont(undefined, 'bold');
                         doc.text('Shot Breakdown (Extracted from VO):', marginLeft, y);
                         y += 7;
                     } else {
-                        // Continuation page header
                         doc.setFontSize(10);
                         doc.setFont(undefined, 'bold');
                         doc.text(sceneTitle + ' (continued)', marginLeft, y);
                         y += 8;
                     }
 
-                    // Get shots for this page (6 per page, 2 columns = 12 max)
                     const startShotIdx = pageNum * shotsPerPage;
                     const endShotIdx = Math.min(startShotIdx + shotsPerPage, sceneShots.length);
                     const pageShots = sceneShots.slice(startShotIdx, endShotIdx);
 
-                    // Split shots into left and right columns (6 max per column)
                     const leftColShots = pageShots.slice(0, 6);
                     const rightColShots = pageShots.slice(6, 12);
 
                     let leftY = y;
                     let rightY = y;
 
-                    // Draw left column
+                    // Left column
                     leftColShots.forEach((shot) => {
                         const leftColX = marginLeft;
 
-                        // Shot header
                         doc.setFontSize(8);
                         doc.setFont(undefined, 'bold');
                         doc.text('Shot ' + shot.num + ': ' + shot.label, leftColX, leftY);
                         leftY += 3;
                         
-                        // Time (bold)
                         doc.setFontSize(6.5);
                         doc.setFont(undefined, 'bold');
                         const timeText = 'Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's';
                         doc.text(timeText, leftColX + 1, leftY);
                         leftY += 2.8;
 
-                        // What (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('What:', leftColX + 1, leftY);
                         doc.setFont(undefined, 'normal');
@@ -779,7 +796,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(whatLines, leftColX + 6, leftY);
                         leftY += (whatLines.length * 2.3) + 0.5;
 
-                        // Focal (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Focal:', leftColX + 1, leftY);
                         doc.setFont(undefined, 'normal');
@@ -787,7 +803,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(focalLines, leftColX + 6, leftY);
                         leftY += (focalLines.length * 2.3) + 0.5;
 
-                        // Where (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Where:', leftColX + 1, leftY);
                         doc.setFont(undefined, 'normal');
@@ -795,7 +810,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(whereLines, leftColX + 6, leftY);
                         leftY += (whereLines.length * 2.3) + 0.5;
 
-                        // Action (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Action:', leftColX + 1, leftY);
                         doc.setFont(undefined, 'normal');
@@ -803,7 +817,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(actionLines, leftColX + 6, leftY);
                         leftY += (actionLines.length * 2.3) + 0.5;
 
-                        // Details (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Details:', leftColX + 1, leftY);
                         doc.setFont(undefined, 'normal');
@@ -812,24 +825,21 @@ Use sensory language, cynical wit, authentic voice.`
                         leftY += (detailLines.length * 2.3) + 2.5;
                     });
 
-                    // Draw right column
+                    // Right column
                     rightColShots.forEach((shot) => {
                         const rightColX = marginLeft + colWidth + gutterWidth;
 
-                        // Shot header
                         doc.setFontSize(8);
                         doc.setFont(undefined, 'bold');
                         doc.text('Shot ' + shot.num + ': ' + shot.label, rightColX, rightY);
                         rightY += 3;
 
-                        // Time (bold)
                         doc.setFontSize(6.5);
                         doc.setFont(undefined, 'bold');
                         const timeText = 'Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's';
                         doc.text(timeText, rightColX + 1, rightY);
                         rightY += 2.8;
 
-                        // What (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('What:', rightColX + 1, rightY);
                         doc.setFont(undefined, 'normal');
@@ -837,7 +847,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(whatLines, rightColX + 6, rightY);
                         rightY += (whatLines.length * 2.3) + 0.5;
 
-                        // Focal (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Focal:', rightColX + 1, rightY);
                         doc.setFont(undefined, 'normal');
@@ -845,7 +854,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(focalLines, rightColX + 6, rightY);
                         rightY += (focalLines.length * 2.3) + 0.5;
 
-                        // Where (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Where:', rightColX + 1, rightY);
                         doc.setFont(undefined, 'normal');
@@ -853,7 +861,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(whereLines, rightColX + 6, rightY);
                         rightY += (whereLines.length * 2.3) + 0.5;
 
-                        // Action (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Action:', rightColX + 1, rightY);
                         doc.setFont(undefined, 'normal');
@@ -861,7 +868,6 @@ Use sensory language, cynical wit, authentic voice.`
                         doc.text(actionLines, rightColX + 6, rightY);
                         rightY += (actionLines.length * 2.3) + 0.5;
 
-                        // Details (bold label, wrapped content)
                         doc.setFont(undefined, 'bold');
                         doc.text('Details:', rightColX + 1, rightY);
                         doc.setFont(undefined, 'normal');
