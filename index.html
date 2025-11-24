@@ -39,7 +39,7 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.6; color: var(--color-text); background-color: var(--color-background); padding: 24px; }
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         header { text-align: center; margin-bottom: 32px; }
         h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
         .subtitle { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 24px; }
@@ -75,12 +75,28 @@
         .scene-section { margin-bottom: 16px; }
         .scene-section-label { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         .scene-section-content { font-size: 13px; line-height: 1.7; color: var(--color-text); }
-        .shot-item { margin-bottom: 12px; padding-left: 16px; border-left: 2px solid var(--color-border); }
-        .shot-label { font-weight: 600; font-size: 13px; margin-bottom: 4px; color: var(--color-primary); }
-        .shot-content { font-size: 12px; line-height: 1.6; }
-        .shot-detail { margin: 4px 0; }
+        .shots-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 12px; }
+        .shot-card { background-color: var(--color-surface); border: 2px solid var(--color-primary); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; }
+        .shot-card-number { font-size: 11px; font-weight: 600; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .shot-card-label { font-size: 12px; font-weight: 600; color: var(--color-text); margin-bottom: 8px; }
+        .shot-card-content { font-size: 11px; line-height: 1.5; color: var(--color-text-secondary); }
+        .shot-card-item { margin-bottom: 6px; }
+        .shot-card-item-label { font-weight: 600; color: var(--color-text); font-size: 10px; }
+        .shot-card-item-value { color: var(--color-text-secondary); margin-top: 2px; }
         .action-buttons { display: flex; gap: 16px; margin-top: 24px; }
-        @media (max-width: 768px) { body { padding: 16px; } .phase { padding: 24px; } .navigation { flex-direction: column; } .navigation button { width: 100%; } }
+        @media (max-width: 1024px) {
+            .shots-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .phase { padding: 24px; }
+            .navigation { flex-direction: column; }
+            .navigation button { width: 100%; }
+            .shots-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .shots-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -509,23 +525,46 @@ Use sensory language, cynical wit, authentic voice.`
                 const title = `Scene ${i + 1}: ${sceneNames[i]}`;
                 const shots = extractShotsFromVO(scene.vo, i + 1, appData.heroProduct, duration);
                 
-                let shotsHTML = '';
+                let shotsGridHTML = '<div class="shots-grid">';
                 shots.forEach(shot => {
-                    shotsHTML += `
-                        <div class="shot-item">
-                            <div class="shot-label">Shot ${shot.num}: ${shot.label} (${shot.timeStart}-${shot.timeEnd}s)</div>
-                            <div class="shot-content">
-                                <div class="shot-detail"><strong>VO Hook:</strong> Extract relevant line from narrative</div>
-                                <div class="shot-detail"><strong>What to Shoot:</strong> ${shot.extract}</div>
-                                <div class="shot-detail"><strong>Focal Point:</strong> ${shot.focal}</div>
-                                <div class="shot-detail"><strong>Where:</strong> ${shot.where}</div>
-                                <div class="shot-detail"><strong>Action:</strong> ${shot.action}</div>
-                                <div class="shot-detail"><strong>Details to Capture:</strong> ${shot.details}</div>
-                                <div class="shot-detail"><strong>B-roll Option:</strong> ${shot.broll}</div>
+                    shotsGridHTML += `
+                        <div class="shot-card">
+                            <div class="shot-card-number">Shot ${shot.num}</div>
+                            <div class="shot-card-label">${shot.label}</div>
+                            <div class="shot-card-content">
+                                <div class="shot-card-item">
+                                    <div class="shot-card-item-label">Time</div>
+                                    <div class="shot-card-item-value">${shot.timeStart}-${shot.timeEnd}s</div>
+                                </div>
+                                <div class="shot-card-item">
+                                    <div class="shot-card-item-label">What to Shoot</div>
+                                    <div class="shot-card-item-value">${shot.extract}</div>
+                                </div>
+                                <div class="shot-card-item">
+                                    <div class="shot-card-item-label">Focal Point</div>
+                                    <div class="shot-card-item-value">${shot.focal}</div>
+                                </div>
+                                <div class="shot-card-item">
+                                    <div class="shot-card-item-label">Where</div>
+                                    <div class="shot-card-item-value">${shot.where}</div>
+                                </div>
+                                <div class="shot-card-item">
+                                    <div class="shot-card-item-label">Action</div>
+                                    <div class="shot-card-item-value">${shot.action}</div>
+                                </div>
+                                <div class="shot-card-item">
+                                    <div class="shot-card-item-label">Details</div>
+                                    <div class="shot-card-item-value">${shot.details}</div>
+                                </div>
+                                <div class="shot-card-item">
+                                    <div class="shot-card-item-label">B-roll</div>
+                                    <div class="shot-card-item-value">${shot.broll}</div>
+                                </div>
                             </div>
                         </div>
                     `;
                 });
+                shotsGridHTML += '</div>';
                 
                 sceneDiv.innerHTML = `
                     <div class="scene-title">${title}</div>
@@ -538,7 +577,7 @@ Use sensory language, cynical wit, authentic voice.`
                     
                     <div class="scene-section">
                         <div class="scene-section-label">Shot Breakdown (Extracted from VO)</div>
-                        ${shotsHTML}
+                        ${shotsGridHTML}
                     </div>
                 `;
                 
