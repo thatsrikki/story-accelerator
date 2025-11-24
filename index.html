@@ -661,7 +661,10 @@ Use sensory language, cynical wit, authentic voice.`
             const marginRight = 12.7;
             const marginTop = 12.7;
             const marginBottom = 12.7;
-            const colWidth = (pageWidth - marginLeft - marginRight - 6) / 2;
+            const gutterWidth = 5;
+            const colWidth = (pageWidth - marginLeft - marginRight - gutterWidth) / 2;
+            const availableHeight = pageHeight - marginTop - marginBottom - 15;
+            const shotHeight = availableHeight / 6; // 6 shots per column
             
             const title = document.getElementById('titleHook').value || 'Storyboard';
             const duration = document.getElementById('reelLength').value === '15' ? 5 : 
@@ -681,128 +684,134 @@ Use sensory language, cynical wit, authentic voice.`
             doc.text('Hero Product: ' + appData.heroProduct, marginLeft, marginTop + 60);
             doc.text('Date: ' + new Date().toLocaleDateString(), marginLeft, marginTop + 70);
 
-            let y;
-
             appData.scenes.forEach((scene, sceneIdx) => {
-                // New page for each scene
-                doc.addPage();
-                y = marginTop;
-
-                // Scene title
-                doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                const sceneTitle = 'Scene ' + (sceneIdx + 1) + ': ' + sceneNames[sceneIdx];
-                doc.text(sceneTitle, marginLeft, y);
-                y += 8;
-
-                // Scene meta
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'normal');
-                const metaText = 'Duration: ' + Math.round(duration) + 's total | ~' + timePerShot + 's per shot';
-                doc.text(metaText, marginLeft, y);
-                y += 8;
-
-                // Narrative VO
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'bold');
-                doc.text('Narrative VO:', marginLeft, y);
-                y += 6;
-                
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'normal');
-                const voLines = doc.splitTextToSize(scene.vo, pageWidth - marginLeft - marginRight);
-                doc.text(voLines, marginLeft, y);
-                y += (voLines.length * 3.5) + 8;
-
-                // Get shot details for this scene
                 const sceneShots = appData.shotDetails.slice(sceneIdx * 5, (sceneIdx + 1) * 5);
+                
+                // Calculate pages needed for this scene (6 shots per page in 2 columns)
+                const shotsPerPage = 12;
+                const pagesNeeded = Math.ceil(sceneShots.length / shotsPerPage);
 
-                // Shot breakdown header
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'bold');
-                doc.text('Shot Breakdown (Extracted from VO):', marginLeft, y);
-                y += 7;
+                for (let pageNum = 0; pageNum < pagesNeeded; pageNum++) {
+                    doc.addPage();
+                    let y = marginTop;
 
-                // Create 2-column layout with max 12 shots per page
-                let shotsOnPage = 0;
-                let leftColX = marginLeft;
-                let rightColX = marginLeft + colWidth + 6;
-                let currentY = y;
-                let maxShotsPerCol = 6; // 12 shots total per page (6 per column)
-
-                for (let shotIdx = 0; shotIdx < sceneShots.length; shotIdx++) {
-                    const shot = sceneShots[shotIdx];
-                    
-                    // Check if we need a new page (max 12 shots per page in 2 columns)
-                    if (shotsOnPage >= 12) {
-                        doc.addPage();
-                        currentY = marginTop;
-                        shotsOnPage = 0;
-                        
-                        // Re-add scene header
-                        doc.setFontSize(10);
-                        doc.setFont(undefined, 'bold');
-                        doc.text(sceneTitle + ' (continued)', marginLeft, currentY);
-                        currentY += 8;
-                    }
-
-                    // Determine which column
-                    const isRightCol = shotsOnPage % 2 === 1;
-                    const colX = isRightCol ? rightColX : leftColX;
-                    const nextColY = isRightCol ? currentY : currentY;
-                    
-                    // Check if we need to move to next row
-                    if (isRightCol && currentY + 35 > pageHeight - marginBottom) {
-                        doc.addPage();
-                        currentY = marginTop;
-                        shotsOnPage = 0;
-                        
-                        // Re-add scene header
-                        doc.setFontSize(10);
-                        doc.setFont(undefined, 'bold');
-                        doc.text(sceneTitle + ' (continued)', marginLeft, currentY);
-                        currentY += 8;
-                    }
-
-                    // Draw shot in current column
-                    doc.setFontSize(8);
+                    // Scene title
+                    doc.setFontSize(14);
                     doc.setFont(undefined, 'bold');
-                    doc.text('Shot ' + shot.num + ': ' + shot.label, colX, currentY);
-                    currentY += 4;
-                    
-                    doc.setFont(undefined, 'normal');
-                    doc.setFontSize(7);
-                    doc.text('Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's', colX + 1, currentY);
-                    currentY += 2.5;
-                    
-                    const whatsToShoot = doc.splitTextToSize(shot.extract, colWidth - 2);
-                    doc.text('What: ', colX + 1, currentY);
-                    doc.text(whatsToShoot, colX + 6, currentY);
-                    currentY += (whatsToShoot.length * 2.5) + 1.5;
-                    
-                    const focalPoint = doc.splitTextToSize('Focal: ' + shot.focal, colWidth - 2);
-                    doc.text(focalPoint, colX + 1, currentY);
-                    currentY += (focalPoint.length * 2.5) + 1.5;
-                    
-                    doc.text('Where: ' + shot.where, colX + 1, currentY);
-                    currentY += 2.5;
-                    doc.text('Action: ' + shot.action, colX + 1, currentY);
-                    currentY += 2.5;
-                    
-                    const details = doc.splitTextToSize('Details: ' + shot.details, colWidth - 2);
-                    doc.text(details, colX + 1, currentY);
-                    currentY += (details.length * 2.5) + 1.5;
+                    const sceneTitle = 'Scene ' + (sceneIdx + 1) + ': ' + sceneNames[sceneIdx];
+                    doc.text(sceneTitle, marginLeft, y);
+                    y += 8;
 
-                    // Move to next column or next row
-                    if (!isRightCol) {
-                        // Move to right column at same Y
-                        currentY = nextColY;
+                    // Scene meta (only on first page of scene)
+                    if (pageNum === 0) {
+                        doc.setFontSize(9);
+                        doc.setFont(undefined, 'normal');
+                        const metaText = 'Duration: ' + Math.round(duration) + 's total | ~' + timePerShot + 's per shot';
+                        doc.text(metaText, marginLeft, y);
+                        y += 8;
+
+                        // Narrative VO (only on first page of scene)
+                        doc.setFontSize(10);
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Narrative VO:', marginLeft, y);
+                        y += 6;
+                        
+                        doc.setFontSize(9);
+                        doc.setFont(undefined, 'normal');
+                        const voLines = doc.splitTextToSize(scene.vo, pageWidth - marginLeft - marginRight);
+                        doc.text(voLines, marginLeft, y);
+                        y += (voLines.length * 3) + 6;
+
+                        // Shot breakdown header
+                        doc.setFontSize(10);
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Shot Breakdown (Extracted from VO):', marginLeft, y);
+                        y += 7;
                     } else {
-                        // Move to next row, left column
-                        currentY += 2;
+                        // Continuation page header
+                        doc.setFontSize(10);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(sceneTitle + ' (continued)', marginLeft, y);
+                        y += 8;
                     }
 
-                    shotsOnPage++;
+                    // Get shots for this page (6 per page, 2 columns)
+                    const startShotIdx = pageNum * shotsPerPage;
+                    const endShotIdx = Math.min(startShotIdx + shotsPerPage, sceneShots.length);
+                    const pageShots = sceneShots.slice(startShotIdx, endShotIdx);
+
+                    // Draw 2 columns with 6 shots max per column
+                    const leftColShots = pageShots.slice(0, 6);
+                    const rightColShots = pageShots.slice(6, 12);
+
+                    let leftY = y;
+                    let rightY = y;
+
+                    // Draw left column
+                    leftColShots.forEach((shot) => {
+                        doc.setFontSize(8);
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Shot ' + shot.num + ': ' + shot.label, marginLeft, leftY);
+                        leftY += 3;
+                        
+                        doc.setFont(undefined, 'normal');
+                        doc.setFontSize(6.5);
+                        doc.text('Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's', marginLeft + 1, leftY);
+                        leftY += 2.5;
+                        
+                        const whatsToShoot = doc.splitTextToSize('What: ' + shot.extract, colWidth - 2);
+                        doc.text(whatsToShoot, marginLeft + 1, leftY);
+                        leftY += (whatsToShoot.length * 2.3);
+                        
+                        const focalLines = doc.splitTextToSize('Focal: ' + shot.focal, colWidth - 2);
+                        doc.text(focalLines, marginLeft + 1, leftY);
+                        leftY += (focalLines.length * 2.3);
+                        
+                        const whereLines = doc.splitTextToSize('Where: ' + shot.where, colWidth - 2);
+                        doc.text(whereLines, marginLeft + 1, leftY);
+                        leftY += (whereLines.length * 2.3);
+                        
+                        const actionLines = doc.splitTextToSize('Action: ' + shot.action, colWidth - 2);
+                        doc.text(actionLines, marginLeft + 1, leftY);
+                        leftY += (actionLines.length * 2.3);
+                        
+                        const detailLines = doc.splitTextToSize('Details: ' + shot.details, colWidth - 2);
+                        doc.text(detailLines, marginLeft + 1, leftY);
+                        leftY += (detailLines.length * 2.3) + 2;
+                    });
+
+                    // Draw right column
+                    rightColShots.forEach((shot) => {
+                        doc.setFontSize(8);
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Shot ' + shot.num + ': ' + shot.label, marginLeft + colWidth + gutterWidth, rightY);
+                        rightY += 3;
+                        
+                        doc.setFont(undefined, 'normal');
+                        doc.setFontSize(6.5);
+                        doc.text('Time: ' + ((shot.num - 1) * timePerShot) + '-' + (shot.num * timePerShot) + 's', marginLeft + colWidth + gutterWidth + 1, rightY);
+                        rightY += 2.5;
+                        
+                        const whatsToShoot = doc.splitTextToSize('What: ' + shot.extract, colWidth - 2);
+                        doc.text(whatsToShoot, marginLeft + colWidth + gutterWidth + 1, rightY);
+                        rightY += (whatsToShoot.length * 2.3);
+                        
+                        const focalLines = doc.splitTextToSize('Focal: ' + shot.focal, colWidth - 2);
+                        doc.text(focalLines, marginLeft + colWidth + gutterWidth + 1, rightY);
+                        rightY += (focalLines.length * 2.3);
+                        
+                        const whereLines = doc.splitTextToSize('Where: ' + shot.where, colWidth - 2);
+                        doc.text(whereLines, marginLeft + colWidth + gutterWidth + 1, rightY);
+                        rightY += (whereLines.length * 2.3);
+                        
+                        const actionLines = doc.splitTextToSize('Action: ' + shot.action, colWidth - 2);
+                        doc.text(actionLines, marginLeft + colWidth + gutterWidth + 1, rightY);
+                        rightY += (actionLines.length * 2.3);
+                        
+                        const detailLines = doc.splitTextToSize('Details: ' + shot.details, colWidth - 2);
+                        doc.text(detailLines, marginLeft + colWidth + gutterWidth + 1, rightY);
+                        rightY += (detailLines.length * 2.3) + 2;
+                    });
                 }
             });
 
