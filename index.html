@@ -2782,9 +2782,8 @@ Make this feel like Bourdain wrote it FOR THIS SPECIFIC BUSINESS - authentic, de
         const data = await response.json();
         const storyboard = data.choices[0].message.content;
 
-        // Display result in a modal or new window
-        const resultWindow = window.open('', '_blank');
-        resultWindow.document.write(`
+        // Create HTML content
+        const htmlContent = `
           <!DOCTYPE html>
           <html>
           <head>
@@ -2795,10 +2794,11 @@ Make this feel like Bourdain wrote it FOR THIS SPECIFIC BUSINESS - authentic, de
               h1 { color: #333; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
               h2 { color: #667eea; margin-top: 30px; }
               h3 { color: #555; margin-top: 20px; }
-              pre { background: #f0f0f0; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 13px; }
+              pre { background: #f0f0f0; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; }
               .meta { background: #f9f9f9; padding: 15px; border-radius: 4px; margin-bottom: 30px; border-left: 4px solid #667eea; }
               .meta-item { margin: 8px 0; font-size: 14px; }
-              button { background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 20px; }
+              .button-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+              button { background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
               button:hover { background: #764ba2; }
             </style>
           </head>
@@ -2812,12 +2812,35 @@ Make this feel like Bourdain wrote it FOR THIS SPECIFIC BUSINESS - authentic, de
                 <div class="meta-item"><strong>Generated:</strong> ${new Date().toLocaleDateString()}</div>
               </div>
               <pre>${storyboard}</pre>
-              <button onclick="window.print()">🖨️ Print / Save as PDF</button>
+              <div class="button-group">
+                <button onclick="window.print()">🖨️ Print / Save as PDF</button>
+                <button onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+              </div>
+              <script>
+                function copyToClipboard() {
+                  const text = document.querySelector('pre').textContent;
+                  navigator.clipboard.writeText(text).then(() => {
+                    alert('✅ Storyboard copied to clipboard!');
+                  }).catch(() => {
+                    alert('Failed to copy. Please try again.');
+                  });
+                }
+              </script>
             </div>
           </body>
           </html>
-        `);
-        resultWindow.document.close();
+        `;
+
+        // Try to open new window, with fallback
+        const resultWindow = window.open('', '_blank', 'width=1000,height=800');
+        
+        if (resultWindow) {
+          resultWindow.document.write(htmlContent);
+          resultWindow.document.close();
+        } else {
+          // Fallback: display in alert if pop-up is blocked
+          alert('⚠️ Pop-up blocked. Your storyboard is ready!\n\nPlease disable pop-up blockers to view in a new window, or check the browser console for the full output.\n\n' + storyboard.substring(0, 500) + '...');
+        }
 
         btn.textContent = originalText;
         btn.disabled = false;
