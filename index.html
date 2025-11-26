@@ -1100,6 +1100,14 @@
           <div class="step-number">5</div>
           <div class="step-label">Behind-the-Scenes</div>
         </div>
+        <div class="progress-step" data-step="6">
+          <div class="step-number">6</div>
+          <div class="step-label">Brand & Voice</div>
+        </div>
+        <div class="progress-step" data-step="7">
+          <div class="step-number">7</div>
+          <div class="step-label">Review & Generate</div>
+        </div>
       </div>
     </div>
 
@@ -1340,8 +1348,273 @@
 
         <div class="step-actions">
           <button class="btn-back" id="back5">← Back</button>
-          <button class="btn-generate" id="generateStoryboard">
-            ✨ Generate My Shot List
+          <button class="btn-next" id="next5">Next: Brand & Voice →</button>
+        </div>
+      </div>
+
+      <!-- STEP 6: BRAND & VOICE PROFILE -->
+      <div class="wizard-step hidden" id="step6" data-step="6">
+        <div class="step-header">
+          <h2>Your Brand & Voice Identity</h2>
+          <p class="step-description">Define your brand's unique story and cinematic voice</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px;">
+          <!-- Left Column: Business Info & UVP -->
+          <div>
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">Business Name</label>
+              <input 
+                type="text" 
+                id="businessName" 
+                class="api-key-input" 
+                placeholder="e.g., Jerusalem Grill and Deli"
+              >
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">🎯 Hero Product/Focus</label>
+              <input 
+                type="text" 
+                id="heroProduct" 
+                class="api-key-input" 
+                placeholder="e.g., Kufta Burgers, Barista Craft, Personal Training"
+              >
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">🌟 What Makes You Different?</label>
+              <textarea 
+                id="differentiation" 
+                class="api-key-input" 
+                placeholder="30 years of hunger & hustle, hand-shaped, real ingredients only..."
+                style="min-height: 80px; font-family: inherit; resize: vertical;"
+              ></textarea>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">🚫 What Do You Refuse to Do?</label>
+              <textarea 
+                id="boundaries" 
+                class="api-key-input" 
+                placeholder="No frozen lies, no shortcuts, no processed BS..."
+                style="min-height: 80px; font-family: inherit; resize: vertical;"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Right Column: Emotion, Heritage, Links -->
+          <div>
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">💭 Emotion You Want to Invoke</label>
+              <input 
+                type="text" 
+                id="emotion" 
+                class="api-key-input" 
+                placeholder="e.g., Rebellion, Comfort, Discovery, Authenticity, Trust"
+              >
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">📖 Origin Story (Optional)</label>
+              <textarea 
+                id="heritage" 
+                class="api-key-input" 
+                placeholder="Started in 1994 on Jerusalem streets, family recipe..."
+                style="min-height: 80px; font-family: inherit; resize: vertical;"
+              ></textarea>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">🌐 Website</label>
+              <input 
+                type="url" 
+                id="website" 
+                class="api-key-input" 
+                placeholder="https://yourwebsite.com"
+              >
+            </div>
+
+            <div style="margin-bottom: 25px;">
+              <label class="api-key-label">📱 Social Links</label>
+              <input 
+                type="url" 
+                id="socialFacebook" 
+                class="api-key-input" 
+                placeholder="Facebook: https://facebook.com/yourpage"
+                style="margin-bottom: 10px;"
+              >
+              <input 
+                type="url" 
+                id="socialInstagram" 
+                class="api-key-input" 
+                placeholder="Instagram: https://instagram.com/yourhandle"
+              >
+            </div>
+          </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%); border-left: 4px solid #667eea; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+          <h3 style="font-size: 16px; color: #333; margin-bottom: 15px; font-weight: 600;">Choose Your Voice Tone</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <label style="position: relative; cursor: pointer;">
+              <input type="radio" name="toneStyle" value="cynical_witty" style="display: none;">
+              <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s ease; background: white;">
+                <div style="font-size: 20px; margin-bottom: 8px;">😏</div>
+                <div style="font-weight: 600; color: #333; margin-bottom: 5px;">Cynical & Witty</div>
+                <div style="font-size: 12px; color: #999;">Dry humor, street-smart digs</div>
+              </div>
+            </label>
+            <label style="position: relative; cursor: pointer;">
+              <input type="radio" name="toneStyle" value="introspective_poetic" style="display: none;">
+              <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s ease; background: white;">
+                <div style="font-size: 20px; margin-bottom: 8px;">🌙</div>
+                <div style="font-weight: 600; color: #333; margin-bottom: 5px;">Introspective & Poetic</div>
+                <div style="font-size: 12px; color: #999;">Deep musings, sensory metaphors</div>
+              </div>
+            </label>
+            <label style="position: relative; cursor: pointer;">
+              <input type="radio" name="toneStyle" value="adventurous_bold" style="display: none;">
+              <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s ease; background: white;">
+                <div style="font-size: 20px; margin-bottom: 8px;">⚡</div>
+                <div style="font-weight: 600; color: #333; margin-bottom: 5px;">Adventurous & Bold</div>
+                <div style="font-size: 12px; color: #999;">High-energy rants, dare-you</div>
+              </div>
+            </label>
+            <label style="position: relative; cursor: pointer;">
+              <input type="radio" name="toneStyle" value="nostalgic_warm" style="display: none;">
+              <div style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s ease; background: white;">
+                <div style="font-size: 20px; margin-bottom: 8px;">🔥</div>
+                <div style="font-weight: 600; color: #333; margin-bottom: 5px;">Nostalgic & Warm</div>
+                <div style="font-size: 12px; color: #999;">Sentiment under sarcasm</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+          <div>
+            <label class="api-key-label">👥 Primary Audience Age</label>
+            <select id="ageRange" class="api-key-input" style="cursor: pointer;">
+              <option value="">Select age range...</option>
+              <option value="18-25">18-25 (Gen Z)</option>
+              <option value="25-35">25-35 (Millennials)</option>
+              <option value="35-50">35-50 (Gen X)</option>
+              <option value="50+">50+ (Boomers)</option>
+              <option value="all-ages">All Ages</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="api-key-label">🎯 Audience Type</label>
+            <select id="psychographic" class="api-key-input" style="cursor: pointer;">
+              <option value="">Select audience type...</option>
+              <option value="foodies">Foodies & Food Lovers</option>
+              <option value="entrepreneurs">Entrepreneurs & Business Owners</option>
+              <option value="health-conscious">Health Conscious & Wellness</option>
+              <option value="local-community">Local Community Members</option>
+              <option value="professionals">Professionals & Corporate</option>
+              <option value="adventure-seekers">Adventure Seekers</option>
+              <option value="mixed">Mixed Audience</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="tonePreview" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); border: 2px dashed #667eea; border-radius: 10px; padding: 20px; margin-bottom: 30px;">
+          <p style="color: #999; font-size: 13px;">Voice tone preview will appear here...</p>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn-back" id="back6">← Back</button>
+          <button class="btn-next" id="next6">Next: Review & Generate →</button>
+        </div>
+      </div>
+
+      <!-- STEP 7: REVIEW & GENERATE -->
+      <div class="wizard-step hidden" id="step7" data-step="7">
+        <div class="step-header">
+          <h2>Review Your Production Brief</h2>
+          <p class="step-description">Everything looks good? Generate your AI-powered storyboard & PDF</p>
+        </div>
+
+        <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); border: 2px solid #667eea; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <!-- Left Side: Business Profile -->
+            <div>
+              <h3 style="font-size: 16px; color: #333; margin-bottom: 15px; font-weight: 600; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Business Profile</h3>
+              
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Business:</span>
+                <span id="reviewBusiness" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+              
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Hero Product:</span>
+                <span id="reviewProduct" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+              
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Unique Value:</span>
+                <span id="reviewDiff" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Emotion Target:</span>
+                <span id="reviewEmotion" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Website:</span>
+                <a id="reviewWebsite" href="#" target="_blank" style="color: #667eea; text-decoration: none; margin-left: 5px;">—</a>
+              </div>
+            </div>
+
+            <!-- Right Side: Production Settings -->
+            <div>
+              <h3 style="font-size: 16px; color: #333; margin-bottom: 15px; font-weight: 600; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Production Settings</h3>
+              
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Locations:</span>
+                <span id="reviewLocations" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+              
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">B-Roll Strategy:</span>
+                <span id="reviewBroll" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+              
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Voice Tone:</span>
+                <span id="reviewTone" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Target Audience:</span>
+                <span id="reviewAudience" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <span style="font-weight: 600; color: #667eea;">Activities:</span>
+                <span id="reviewActivities" style="color: #333; margin-left: 5px;">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+          <label class="api-key-label">Number of Scenes (2-5)</label>
+          <select id="sceneCount" class="api-key-input" style="cursor: pointer;">
+            <option value="2">2 Scenes (Quick Video)</option>
+            <option value="3" selected>3 Scenes (Balanced)</option>
+            <option value="4">4 Scenes (Detailed)</option>
+            <option value="5">5 Scenes (Epic Production)</option>
+          </select>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn-back" id="back7">← Back</button>
+          <button class="btn-generate" id="finalGenerate">
+            🎬 Generate Storyboard & PDF
           </button>
         </div>
       </div>
@@ -2162,6 +2435,275 @@ Please provide:
     });
 
     document.getElementById('back5').addEventListener('click', () => showStep(4));
+
+    // ============================================
+    // STEP 6: BRAND & VOICE PROFILE
+    // ============================================
+
+    const toneProfiles = {
+      cynical_witty: {
+        name: "Cynical & Witty",
+        emoji: "😏",
+        description: "Dry humor, street-smart digs, irreverent takes",
+        examples: ["No frozen lies. No shortcuts.", "Where thirty years of hunger and hustle get ground up", "A dare to forget the processed and the pretty"]
+      },
+      introspective_poetic: {
+        name: "Introspective & Poetic",
+        emoji: "🌙",
+        description: "Deep musings, sensory metaphors, philosophical undertones",
+        examples: ["In every bite is a story thirty years in the making", "Where flame transforms hunger into hope", "This is where ritual becomes reality"]
+      },
+      adventurous_bold: {
+        name: "Adventurous & Bold",
+        emoji: "⚡",
+        description: "High-energy rants, dare-you-challenges, visceral language",
+        examples: ["Forget everything you know about this", "We're not here to play it safe", "You either get it, or you don't"]
+      },
+      nostalgic_warm: {
+        name: "Nostalgic & Warm",
+        emoji: "🔥",
+        description: "Subtle sentiment under sarcasm, family/heritage themes",
+        examples: ["My grandmother would recognize this craft", "This is what real looks like", "Some things are worth the long way around"]
+      }
+    };
+
+    // Tone Selection Styling
+    document.querySelectorAll('input[name="toneStyle"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('input[name="toneStyle"]').forEach(r => {
+          r.parentElement.querySelector('div').style.borderColor = '#e0e0e0';
+          r.parentElement.querySelector('div').style.background = 'white';
+        });
+        this.parentElement.querySelector('div').style.borderColor = '#667eea';
+        this.parentElement.querySelector('div').style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)';
+        
+        updateTonePreview();
+      });
+    });
+
+    function updateTonePreview() {
+      const selectedTone = document.querySelector('input[name="toneStyle"]:checked');
+      const preview = document.getElementById('tonePreview');
+      
+      if (selectedTone) {
+        const tone = toneProfiles[selectedTone.value];
+        preview.innerHTML = `
+          <div style="margin-bottom: 10px;">
+            <span style="font-weight: 600; color: #667eea;">Voice Tone: ${tone.emoji} ${tone.name}</span>
+          </div>
+          <div style="font-size: 13px; color: #666; margin-bottom: 12px;">${tone.description}</div>
+          <div style="font-size: 12px; color: #999;">
+            <strong>Examples:</strong><br>
+            ${tone.examples.map(ex => `• ${ex}`).join('<br>')}
+          </div>
+        `;
+        preview.style.borderStyle = 'solid';
+        preview.style.background = 'linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%)';
+      }
+    }
+
+    document.getElementById('next5').addEventListener('click', () => {
+      showStep(6);
+    });
+
+    document.getElementById('next6').addEventListener('click', () => {
+      const businessName = document.getElementById('businessName').value;
+      const heroProduct = document.getElementById('heroProduct').value;
+      const tone = document.querySelector('input[name="toneStyle"]:checked');
+
+      if (!businessName || !heroProduct || !tone) {
+        alert('Please fill in Business Name, Hero Product, and select a Voice Tone');
+        return;
+      }
+
+      showStep(7);
+      updateReviewSection();
+    });
+
+    document.getElementById('back6').addEventListener('click', () => showStep(5));
+    document.getElementById('back7').addEventListener('click', () => showStep(6));
+
+    function updateReviewSection() {
+      document.getElementById('reviewBusiness').textContent = formState.businessType.charAt(0).toUpperCase() + formState.businessType.slice(1);
+      document.getElementById('reviewProduct').textContent = document.getElementById('heroProduct').value;
+      document.getElementById('reviewDiff').textContent = document.getElementById('differentiation').value.substring(0, 50) + '...';
+      document.getElementById('reviewEmotion').textContent = document.getElementById('emotion').value;
+      
+      const website = document.getElementById('website').value;
+      document.getElementById('reviewWebsite').href = website;
+      document.getElementById('reviewWebsite').textContent = website || 'Not provided';
+      
+      document.getElementById('reviewLocations').textContent = formState.selectedLocation;
+      const brollMap = { all: 'All B-Roll', mostly: 'Mostly B-Roll', some: 'Some B-Roll', none: 'No B-Roll' };
+      document.getElementById('reviewBroll').textContent = brollMap[formState.brollStrategy];
+      
+      const selectedTone = document.querySelector('input[name="toneStyle"]:checked');
+      document.getElementById('reviewTone').textContent = selectedTone ? toneProfiles[selectedTone.value].name : '—';
+      
+      const age = document.getElementById('ageRange').value;
+      const psycho = document.getElementById('psychographic').value;
+      document.getElementById('reviewAudience').textContent = `${age} | ${psycho}`;
+      
+      document.getElementById('reviewActivities').textContent = formState.behindTheScenes.length + ' selected';
+    }
+
+    document.getElementById('finalGenerate').addEventListener('click', async () => {
+      if (!apiKey || apiKey.length < 10) {
+        alert('⚠️ Please enter your Perplexity API key at the top of the form first.');
+        apiKeyInput.focus();
+        return;
+      }
+
+      const businessName = document.getElementById('businessName').value;
+      const heroProduct = document.getElementById('heroProduct').value;
+      const differentiation = document.getElementById('differentiation').value;
+      const boundaries = document.getElementById('boundaries').value;
+      const emotion = document.getElementById('emotion').value;
+      const heritage = document.getElementById('heritage').value;
+      const website = document.getElementById('website').value;
+      const instagram = document.getElementById('socialInstagram').value;
+      const selectedTone = document.querySelector('input[name="toneStyle"]:checked');
+      const toneStyle = selectedTone ? toneProfiles[selectedTone.value].name : 'Default';
+      const ageRange = document.getElementById('ageRange').value;
+      const psychographic = document.getElementById('psychographic').value;
+      const sceneCount = document.getElementById('sceneCount').value;
+
+      const enhancedPrompt = `You are Anthony Bourdain writing a production VO script for a ${formState.businessType} business.
+
+BUSINESS PROFILE:
+- Name: ${businessName}
+- Type: ${formState.businessType}
+- Hero Product: ${heroProduct}
+- Unique Differentiation: ${differentiation}
+- Boundaries (What they refuse): ${boundaries}
+- Heritage/Origin: ${heritage || 'N/A'}
+- Website: ${website}
+- Instagram: ${instagram}
+
+BRAND VOICE (UVP):
+- Emotional Target: ${emotion}
+- Voice Tone: ${toneStyle}
+
+AUDIENCE:
+- Age Range: ${ageRange}
+- Psychographic: ${psychographic}
+- Gender Focus: ${formState.gender}
+
+PRODUCTION DETAILS:
+- Hero Location: ${formState.selectedLocation}
+- Locations: ${formState.locations.join(', ')}
+- B-Roll Strategy: ${formState.brollStrategy}
+- Activities: ${formState.behindTheScenes.join(', ')}
+
+Generate ${sceneCount} cinematic scenes, each 12-15 seconds of VO that:
+
+1. Opens with an authentic, defiant hook pulling from the brand's UVP
+2. Weaves in sensory details and the hero product naturally
+3. Reflects the tone (${toneStyle}) - cynical wit, poetic depth, bold adventure, or warm nostalgia
+4. Builds visual momentum through the described locations
+5. Ends with emotional/philosophical payoff that ties to the core brand message
+
+For EACH scene provide:
+SCENE [#]: [TITLE]
+Duration: [X] seconds
+TONE: ${toneStyle}
+VO: [Full narrative - make it feel like lived truth, not marketing]
+
+SHOT BREAKDOWN for Scene [#]:
+Extract key visual moments from the VO and describe:
+- Shot [#]: [Timecode] | [What to film] | [Focal point] | [Location] | [Details]
+
+After all scenes, provide:
+PRODUCTION RECOMMENDATIONS:
+- Equipment needed
+- Crew roles
+- Estimated timeline
+- Key production notes for ${formState.businessType}
+
+Make this feel like Bourdain wrote it FOR this specific business. Authentic, defiant, real.`;
+
+      try {
+        const btn = document.getElementById('finalGenerate');
+        const originalText = btn.textContent;
+        btn.textContent = '⏳ Generating...';
+        btn.disabled = true;
+
+        const response = await fetch('https://api.perplexity.ai/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: 'sonar',
+            messages: [
+              {
+                role: 'user',
+                content: enhancedPrompt
+              }
+            ],
+            max_tokens: 4000
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('API request failed: ' + response.statusText);
+        }
+
+        const data = await response.json();
+        const storyboardContent = data.choices[0].message.content;
+
+        // Create PDF with all information
+        const pdfContent = `
+PRODUCTION STORYBOARD
+${businessName}
+
+Generated: ${new Date().toLocaleDateString()}
+
+═══════════════════════════════════════════════
+
+BRAND BRIEF:
+Business: ${businessName}
+Hero Product: ${heroProduct}
+Unique Value: ${differentiation}
+What We Refuse: ${boundaries}
+Emotional Target: ${emotion}
+Voice Tone: ${toneStyle}
+
+Video Settings:
+- Locations: ${formState.locations.join(', ')}
+- B-Roll Strategy: ${formState.brollStrategy}
+- Target Audience: ${ageRange} | ${psychographic}
+- Gender Focus: ${formState.gender}
+
+═══════════════════════════════════════════════
+
+${storyboardContent}
+
+═══════════════════════════════════════════════
+
+LINKS & SOCIAL:
+Website: ${website}
+Instagram: ${instagram}
+
+EOF`;
+
+        // Copy to clipboard for now (PDF generation would require additional library)
+        navigator.clipboard.writeText(pdfContent).then(() => {
+          alert('✅ Storyboard copied to clipboard!\n\nNote: Full PDF export feature coming soon.\n\n' + storyboardContent);
+        });
+
+        btn.textContent = originalText;
+        btn.disabled = false;
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error generating storyboard.\n\nError: ' + error.message);
+        
+        const btn = document.getElementById('finalGenerate');
+        btn.textContent = '🎬 Generate Storyboard & PDF';
+        btn.disabled = false;
+      }
+    });
 
     // ============================================
     // INITIALIZATION
