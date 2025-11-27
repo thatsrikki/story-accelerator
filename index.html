@@ -136,8 +136,19 @@
     .recommendations-box { background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(118,75,162,0.08) 100%); padding: 15px; border-radius: 8px; border-left: 4px solid #667eea; }
     .recommendations-box h4 { font-size: 13px; color: #667eea; margin-bottom: 10px; font-weight: 600; }
     .recommendation-item { font-size: 12px; color: #555; margin-bottom: 8px; line-height: 1.4; }
+    .production-plan { background: #f9f9f9; padding: 30px; border-radius: 12px; margin-top: 20px; }
+    .production-plan h3 { font-size: 20px; color: #333; margin-bottom: 20px; }
+    .plan-section { margin-bottom: 30px; page-break-inside: avoid; }
+    .plan-section h4 { font-size: 16px; color: #667eea; margin-bottom: 15px; font-weight: 600; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+    .checklist { list-style: none; }
+    .checklist li { padding: 8px 0; font-size: 14px; color: #333; }
+    .checklist input[type="checkbox"] { margin-right: 10px; cursor: pointer; }
+    .vo-script { background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #667eea; line-height: 1.8; }
+    .vo-label { font-weight: 600; color: #667eea; font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
+    .vo-text { font-size: 14px; color: #333; font-family: Georgia, serif; }
     @media (max-width: 1024px) { .wizard-container { grid-template-columns: 1fr; } .wizard-preview-sidebar { position: static; } .form-row { grid-template-columns: 1fr; } }
     @media (max-width: 768px) { .step-actions { flex-direction: column; } .btn-next, .btn-generate { margin-left: 0; } .form-row { grid-template-columns: 1fr; } }
+    @media print { .production-plan { background: white; } .btn-back, .btn-next, .btn-generate, .wizard-preview-sidebar { display: none; } }
   </style>
 </head>
 <body>
@@ -275,7 +286,7 @@
         <div class="review-section"><h3>📹 Production Brief</h3><div class="review-grid" id="reviewBrief"></div></div>
         <div class="scene-selector"><label>How many scenes should we create?</label><select id="sceneCount"><option value="2">2 Scenes</option><option value="3" selected>3 Scenes</option><option value="4">4 Scenes</option><option value="5">5 Scenes</option></select></div>
         <div class="review-section"><h3>🎬 Brand & Voice</h3><div class="review-grid" id="reviewBrand"></div></div>
-        <div class="step-actions"><button class="btn-back" id="back7">← Back</button><button class="btn-generate" id="generateStoryboard">✨ Generate My Storyboard & VO Script</button></div>
+        <div class="step-actions"><button class="btn-back" id="back7">← Back</button><button class="btn-generate" id="generateStoryboard">✨ Generate My Storyboard & Production Plan</button></div>
       </div>
     </div>
 
@@ -354,6 +365,21 @@
       updateProgress();
       updateSidebar();
       window.scrollTo(0, 0);
+      syncUIWithFormState();
+    }
+
+    function syncUIWithFormState() {
+      if (formState.businessType) {
+        const card = document.querySelector(`[data-value="${formState.businessType}"]`);
+        if (card) {
+          document.querySelectorAll('.business-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          card.querySelector('input[name="businessType"]').checked = true;
+        }
+      }
+      document.querySelectorAll('input[name="gender"]').forEach(r => r.checked = r.value === formState.gender);
+      document.querySelectorAll('input[name="brollStrategy"]').forEach(r => r.checked = r.value === formState.brollStrategy);
+      document.querySelectorAll('input[name="toneStyle"]').forEach(r => r.checked = r.value === formState.toneStyle);
     }
 
     function updateSidebar() {
@@ -598,12 +624,12 @@
       btn.textContent = '⏳ Generating...';
       btn.disabled = true;
       try {
-        const prompt = `Generate a production storyboard for: ${formState.businessName} (${businessContextMap[formState.businessType].label}). Hero: ${formState.heroProduct}. Locations: ${formState.locations.join(', ')}. UVP: ${formState.uvpDifferentiation}. Voice: ${toneStyles[formState.toneStyle].label}. Create ${formState.sceneCount} scenes with VO and shot breakdowns.`;
+        const prompt = `Generate a RECIPE CARD production plan for: ${formState.businessName} (${businessContextMap[formState.businessType].label}). Hero: ${formState.heroProduct}. Locations: ${formState.locations.join(', ')}. UVP: ${formState.uvpDifferentiation}. Voice: ${toneStyles[formState.toneStyle].label}. Create ${formState.sceneCount} scenes. IMPORTANT: Structure EXACTLY as: [TITLE HOOK] [SCENE 1 VO] [SCENE 2 VO] etc. Keep each VO to 2-4 sentences max. Then after all scenes, provide [SHOT LIST] with specific clips to film for each location.`;
         const response = await fetch('https://api.perplexity.ai/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify({ model: 'sonar', messages: [{ role: 'user', content: prompt }], max_tokens: 4000 }) });
         if (!response.ok) throw new Error('API error');
         const data = await response.json();
         const storyboard = data.choices[0].message.content;
-        const htmlContent = `<!DOCTYPE html><html><head><title>${formState.businessName} Storyboard</title><style>body{font-family:Arial;padding:40px;max-width:900px;margin:auto}h1{color:#333}pre{background:#f0f0f0;padding:20px;overflow-x:auto}button{padding:10px 20px;background:#667eea;color:white;border:none;border-radius:6px;cursor:pointer}</style></head><body><h1>${formState.businessName} - Production Storyboard</h1><pre>${storyboard}</pre><button onclick="window.print()">Print</button><button onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent)">Copy</button></body></html>`;
+        const htmlContent = `<!DOCTYPE html><html><head><title>${formState.businessName} Production Plan</title><style>body{font-family:Arial,sans-serif;padding:40px;max-width:900px;margin:auto;background:#f9f9f9}h1{color:#333;border-bottom:3px solid #667eea;padding-bottom:10px}h2{color:#667eea;margin-top:30px;margin-bottom:15px}.section{background:white;padding:20px;margin:20px 0;border-radius:8px;border-left:4px solid #667eea}.vo{background:#f0f0f0;padding:15px;margin:10px 0;border-radius:6px;font-style:italic;line-height:1.6}button{padding:10px 20px;background:#667eea;color:white;border:none;border-radius:6px;cursor:pointer;margin:10px 5px 0 0}@media print{button{display:none}}</style></head><body><h1>${formState.businessName} - Production Plan</h1><div class="section"><pre>${storyboard}</pre></div><button onclick="window.print()">Print Plan</button><button onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent)">Copy Text</button></body></html>`;
         const resultWindow = window.open('', '_blank', 'width=1000,height=800');
         if (resultWindow) { resultWindow.document.write(htmlContent); resultWindow.document.close(); } else alert('Pop-up blocked');
       } catch (error) {
