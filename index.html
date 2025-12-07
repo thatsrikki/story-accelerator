@@ -659,6 +659,81 @@
 
     document.getElementById('back7').addEventListener('click', () => showStep(6));
 
+    // PARSING FUNCTION - Extract structured data from storyboard text
+    function parseStoryboard(storyboardText) {
+      const scenes = [];
+      let heroHook = '';
+      let finalCta = '';
+      let equipmentChecklist = [];
+      let timingGuide = '';
+      
+      const heroMatch = storyboardText.match(/\[HERO INTRO HOOK\]([^\[]+)/i);
+      if (heroMatch) heroHook = heroMatch[1].trim();
+      
+      const ctaMatch = storyboardText.match(/\[FINAL CTA VO\]([^\[]+)/i);
+      if (ctaMatch) finalCta = ctaMatch[1].trim();
+      
+      const equipMatch = storyboardText.match(/\[EQUIPMENT CHECKLIST\]([^\[]+)/i);
+      if (equipMatch) {
+        const equipLines = equipMatch[1].trim().split('\n').filter(l => l.trim());
+        equipmentChecklist = equipLines.slice(0, 12);
+      }
+      
+      const timingMatch = storyboardText.match(/\[TIMING GUIDE\]([^\[]+)/i);
+      if (timingMatch) timingGuide = timingMatch[1].trim();
+      
+      const sceneMatches = storyboardText.matchAll(/\[SCENE (\d+) VO\]([^\[]+)(?:\[SCENE \d+ SHOT LIST\]([^\[]+))?/gi);
+      
+      for (const match of sceneMatches) {
+        const sceneNum = match[1];
+        const voScript = match[2].trim();
+        const shotListText = match[3] ? match[3].trim() : '';
+        
+        const shots = [];
+        const shotLines = shotListText.split('\n').filter(l => l.trim() && !l.startsWith('['));
+        
+        shotLines.forEach((line, idx) => {
+          if (line.trim().length > 5) {
+            shots.push({
+              number: idx + 1,
+              description: line.trim(),
+              type: extractShotType(line),
+              duration: extractDuration(line),
+              label: extractLabel(line)
+            });
+          }
+        });
+        
+        scenes.push({
+          number: parseInt(sceneNum),
+          voScript: voScript,
+          voWordCount: voScript.split(/\s+/).length,
+          shots: shots,
+          totalDuration: shots.reduce((sum, s) => sum + (s.duration || 3), 0)
+        });
+      }
+      
+      return { heroHook, scenes: scenes.sort((a, b) => a.number - b.number), finalCta, equipmentChecklist, timingGuide };
+    }
+
+    function extractShotType(text) {
+      const types = ['Close-up', 'Medium', 'Wide', 'Ultra-Wide', 'Detail', 'Over-the-Shoulder', 'Extreme Close-up'];
+      for (const type of types) { if (text.toLowerCase().includes(type.toLowerCase())) return type; }
+      return 'Shot';
+    }
+
+    function extractDuration(text) {
+      const match = text.match(/(\d+)\s*s(?:ec)?/i);
+      return match ? parseInt(match[1]) : 3;
+    }
+
+    function extractLabel(text) {
+      if (text.toLowerCase().includes('a-roll') || text.toLowerCase().includes('talking head')) return 'A-Roll';
+      if (text.toLowerCase().includes('b-roll')) return 'B-Roll';
+      return 'B-Roll';
+    }
+
+    // GENERATE BUTTON - NEW ENHANCED VERSION
     document.getElementById('generateStoryboard').addEventListener('click', async () => {
       if (!apiKey || apiKey.length < 10) { alert('⚠️ Enter your API key'); return; }
       const btn = document.getElementById('generateStoryboard');
@@ -704,9 +779,19 @@ Output structure:
         if (!response.ok) throw new Error('API error');
         const data = await response.json();
         const storyboard = data.choices[0].message.content;
-        const htmlContent = `<!DOCTYPE html><html><head><title>${formState.businessName} Production Plan</title><style>body{margin:0;padding:0.5in;font-family:'Courier New',monospace;font-size:11px;line-height:1.5;color:#333;background:#fff}@page{size:8.5in 11in;margin:0.5in}*{box-sizing:border-box}h1{font-size:18px;margin:0 0 10px 0;text-align:center;border-bottom:2px solid #333;padding-bottom:5px}h2{font-size:14px;margin:15px 0 8px 0;font-weight:bold;border-bottom:1px solid #999;padding-bottom:3px}h3{font-size:12px;margin:10px 0 5px 0;font-weight:bold}p,div{margin:0 0 5px 0}pre{white-space:pre-wrap;word-wrap:break-word;margin:0;font-size:10px}button{padding:8px 16px;background:#333;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;margin:10px 5px 0 0}button:hover{background:#555}@media print{body{background:#f5f5f5}button{display:none}.no-print{display:none}}</style></head><body><h1>🎬 ${formState.businessName}</h1><h2>Production Plan | ${reelTiming} Seconds</h2><pre>${storyboard}</pre><div class="no-print" style="margin-top:20px;text-align:center"><button onclick="window.print()">📄 Print</button><button onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent)">📋 Copy</button><button onclick="window.close()">✕ Close</button></div></body></html>`;
-        const resultWindow = window.open('', '_blank', 'width=750,height=900');
-        if (resultWindow) { resultWindow.document.write(htmlContent); resultWindow.document.close(); } else alert('Pop-up blocked');
+        const parsed = parseStoryboard(storyboard);
+        
+        const footageMultiplier = { all: 8, mostly: 5, some: 3, none: 1 }[formState.brollStrategy] || 3;
+        const footageNeeded = reelTiming * footageMultiplier;
+        
+        const scenesHtml = parsed.scenes.map(scene => `<div class="scene-card"><div class="scene-header"><div class="scene-title">Scene ${scene.number}</div><div class="scene-stats"><span class="stat-badge">📹 ${scene.shots.length} shots</span><span class="stat-badge">⏱️ ~${scene.totalDuration}s</span><span class="stat-badge">✍️ ${scene.voWordCount} words</span></div></div><div class="vo-section"><div class="vo-label">📢 Voice Over</div><div class="vo-text">${scene.voScript}</div></div><div class="shot-list"><div class="shot-list-title">📋 Shot List (${scene.shots.length} shots)</div>${scene.shots.map(shot => `<div class="shot"><span class="shot-number">${shot.number}</span><span>${shot.description}</span><div class="shot-badges"><span class="badge type">${shot.type}</span><span class="badge duration">${shot.duration}s</span><span class="badge label-${shot.label.toLowerCase().replace('-', '')}">${shot.label}</span></div></div>`).join('')}</div></div>`).join('');
+        
+        const equipmentHtml = parsed.equipmentChecklist.map((item, i) => `<div class="equipment-item">🎬 ${item.trim()}</div>`).join('');
+        
+        const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${formState.businessName} - Production Plan</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:30px 20px}.result-container{max-width:900px;margin:0 auto;background:white;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}.result-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:40px;text-align:center}.result-header h1{font-size:32px;margin-bottom:10px}.result-header p{font-size:16px;opacity:0.9}.result-content{padding:40px}.action-bar{display:flex;gap:10px;justify-content:center;margin-bottom:40px;flex-wrap:wrap}.action-btn{padding:12px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.3s ease;font-size:14px}.action-btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white}.action-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(102,126,234,0.3)}.action-btn.secondary{background:#f0f0f0;color:#333}.action-btn.secondary:hover{background:#e0e0e0}.timing-overview{background:linear-gradient(135deg,rgba(102,126,234,0.08) 0%,rgba(118,75,162,0.08) 100%);border-left:4px solid #667eea;padding:20px;border-radius:8px;margin-bottom:30px}.timing-row{display:flex;justify-content:space-between;margin-bottom:10px}.timing-label{font-weight:600;color:#667eea}.timing-value{color:#333;font-weight:500}.hero-hook{background:linear-gradient(135deg,rgba(76,175,80,0.1) 0%,rgba(76,175,80,0.05) 100%);border-left:4px solid #4caf50;padding:20px;border-radius:8px;margin-bottom:30px;font-style:italic;color:#333;line-height:1.6;font-weight:500}.scene-card{background:white;border:2px solid #e0e0e0;border-radius:12px;padding:25px;margin-bottom:20px;transition:all 0.3s ease}.scene-card:hover{border-color:#667eea;box-shadow:0 8px 16px rgba(102,126,234,0.1)}.scene-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:15px;border-bottom:2px solid #e0e0e0}.scene-title{font-size:18px;font-weight:600;color:#333}.scene-stats{display:flex;gap:15px;font-size:12px}.stat-badge{background:#f0f0f0;padding:4px 10px;border-radius:4px;color:#666;font-weight:600}.vo-section{background:linear-gradient(135deg,rgba(255,193,7,0.08) 0%,rgba(255,152,0,0.08) 100%);border-left:4px solid #ff9800;padding:15px;border-radius:6px;margin-bottom:15px}.vo-label{font-weight:600;color:#ff9800;font-size:12px;text-transform:uppercase;margin-bottom:8px}.vo-text{color:#333;line-height:1.6;font-size:14px}.shot-list{margin-top:15px}.shot-list-title{font-weight:600;color:#333;margin-bottom:12px;font-size:13px}.shot{background:#f9f9f9;padding:12px;border-radius:6px;margin-bottom:8px;border-left:3px solid #667eea;font-size:13px;line-height:1.5}.shot-number{display:inline-block;background:#667eea;color:white;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;font-weight:600;margin-right:8px;font-size:12px;flex-shrink:0}.shot-badges{display:inline-flex;gap:6px;margin-left:10px;flex-wrap:wrap}.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;text-transform:uppercase;white-space:nowrap}.badge.type{background:#e3f2fd;color:#1976d2}.badge.duration{background:#f3e5f5;color:#7b1fa2}.badge.label-aroll{background:#e8f5e9;color:#388e3c}.badge.label-broll{background:#fff3e0;color:#e65100}.cta-section{background:linear-gradient(135deg,rgba(229,57,53,0.1) 0%,rgba(211,47,47,0.1) 100%);border-left:4px solid #e53935;padding:15px;border-radius:6px;margin-top:25px;color:#333;line-height:1.6}.cta-label{font-weight:600;color:#e53935;font-size:12px;text-transform:uppercase;margin-bottom:8px}.equipment-section{margin-top:40px;padding-top:30px;border-top:3px solid #e0e0e0}.equipment-title{font-size:20px;font-weight:600;color:#333;margin-bottom:20px}.equipment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.equipment-item{background:#f5f5f5;padding:12px;border-radius:6px;border-left:3px solid #667eea;font-size:13px}.timing-guide{background:linear-gradient(135deg,rgba(76,175,80,0.08) 0%,rgba(76,175,80,0.05) 100%);border-left:4px solid #4caf50;padding:20px;border-radius:8px;margin-top:25px}.timing-guide h3{color:#4caf50;margin-bottom:10px;font-size:14px}.timing-guide p{color:#333;line-height:1.6;margin-bottom:8px;font-size:13px}.footer{text-align:center;padding:30px;background:#f9f9f9;border-top:1px solid #e0e0e0;font-size:12px;color:#999}@media(max-width:768px){.result-header{padding:20px}.result-header h1{font-size:24px}.result-content{padding:20px}.action-bar{flex-direction:column}.action-btn{width:100%}.scene-header{flex-direction:column;align-items:flex-start}.scene-stats{margin-top:10px}}@media print{body{background:white;padding:0}.result-container{box-shadow:none;border-radius:0}.action-bar{display:none}.footer{display:none}}</style></head><body><div class="result-container"><div class="result-header"><h1>🎬 ${formState.businessName}</h1><p>Production Plan & Shot List | ${reelTiming} Seconds</p></div><div class="result-content"><div class="action-bar"><button class="action-btn primary" onclick="window.print()">📄 Print / PDF</button><button class="action-btn secondary" onclick="copyAllToClipboard()">📋 Copy All</button><button class="action-btn secondary" onclick="window.close()">✕ Close</button></div><div class="timing-overview"><div class="timing-row"><span class="timing-label">📹 Total Scenes:</span><span class="timing-value">${formState.sceneCount}</span></div><div class="timing-row"><span class="timing-label">⏱️ Target Duration:</span><span class="timing-value">${reelTiming} seconds</span></div><div class="timing-row"><span class="timing-label">📊 Usable Footage Needed:</span><span class="timing-value">~${footageNeeded}s (${footageMultiplier}x multiplier)</span></div></div><div class="hero-hook"><strong>✨ Opening Hook (First 3 seconds)</strong><br><br>${parsed.heroHook}</div><div class="scenes-section">${scenesHtml}</div>${parsed.finalCta ? `<div class="cta-section"><div class="cta-label">📢 Final CTA</div>${parsed.finalCta}</div>` : ''}<div class="equipment-section"><h2 class="equipment-title">📷 Equipment Checklist</h2><div class="equipment-grid">${equipmentHtml}</div></div>${parsed.timingGuide ? `<div class="timing-guide"><h3>⏱️ Timing & Footage Guide</h3>${parsed.timingGuide}</div>` : ''}</div><div class="footer"><p>Generated with Storyboard AI | Print this for your production team</p></div></div><script>function copyAllToClipboard(){const content=document.body.innerText;navigator.clipboard.writeText(content).then(()=>{alert('✓ Entire plan copied to clipboard!')});}<\/script></body></html>`;
+        
+        const resultWindow = window.open('', '_blank', 'width=950,height=1000');
+        if (resultWindow) { resultWindow.document.write(htmlContent); resultWindow.document.close(); } else alert('Pop-up blocked - please allow popups');
       } catch (error) {
         alert('Error: ' + error.message);
       }
