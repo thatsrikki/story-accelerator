@@ -142,7 +142,7 @@
         <div class="progress">
           <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
           <div style="text-align: center; font-size: 12px; color: #666; margin-top: 10px;">
-            <span id="stepCounter">Step 1 of 7</span>
+            <span id="stepCounter">Step 1 of 8</span>
           </div>
         </div>
       </div>
@@ -688,7 +688,6 @@
       ).join('');
     }
 
-    // FIX #1: Multi-select locations - allow multiple selections with toggle
     function selectLocation(loc, elem) {
       if (state.locations.includes(loc)) {
         state.locations = state.locations.filter(l => l !== loc);
@@ -771,15 +770,14 @@
       }
     }
 
-    // FIX #2: Save button reference before async to avoid event.target undefined error
+    // UPDATED: Call backend function instead of API directly
     async function generateStoryboard() {
       const apiKey = document.getElementById('apiInput').value;
       if (!apiKey) {
-        alert('Enter API key');
+        alert('Please enter your Perplexity API key');
         return;
       }
 
-      // Save button reference BEFORE async
       const btn = document.getElementById('generateBtn');
 
       state.websiteUrl = document.getElementById('websiteUrl').value;
@@ -797,14 +795,23 @@
         btn.textContent = '⏳ Generating...';
         btn.disabled = true;
 
-        const resp = await fetch('https://api.perplexity.ai/chat/completions', {
+        // Call backend function instead of Perplexity API directly
+        const resp = await fetch('/api/generateStoryboard', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-          body: JSON.stringify({ model: 'sonar', messages: [{ role: 'user', content: prompt }], max_tokens: 4000 })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            prompt: prompt,
+            apiKey: apiKey
+          })
         });
-        if (!resp.ok) throw new Error('API Error: ' + resp.statusText);
+
+        if (!resp.ok) {
+          const errorData = await resp.json();
+          throw new Error(errorData.error || 'Failed to generate storyboard');
+        }
+
         const data = await resp.json();
-        const storyboard = data.choices[0].message.content;
+        const storyboard = data.storyboard;
 
         const win = window.open('', '_blank', 'width=1000,height=800');
         win.document.write(`<!DOCTYPE html>
