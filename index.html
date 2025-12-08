@@ -262,45 +262,10 @@
           </div>
         </div>
 
-        <!-- STEP 5: LOCATIONS -->
-        <div class="step hidden" data-step="5" id="locationStep">
-          <h2>Where Should We Film?</h2>
-          <p id="locationDesc"></p>
-          <div class="options-grid" id="locationGrid"></div>
-          <div class="step-actions">
-            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="nextStep()">Next →</button>
-          </div>
-        </div>
-
-        <!-- STEP 6: B-ROLL STRATEGY -->
-        <div class="step hidden" data-step="6" id="brollStep">
-          <h2>B-Roll Strategy</h2>
-          <p>How much background footage vs talking head?</p>
-          <div class="options-grid">
-            <label class="option-card" onclick="selectBroll('mostly', this)">
-              <div class="option-icon">🎬</div>
-              <div class="option-name">Mostly B-Roll (70%)</div>
-            </label>
-            <label class="option-card" onclick="selectBroll('some', this)">
-              <div class="option-icon">🎥</div>
-              <div class="option-name">Some B-Roll (50%)</div>
-            </label>
-            <label class="option-card" onclick="selectBroll('none', this)">
-              <div class="option-icon">📱</div>
-              <div class="option-name">No B-Roll</div>
-            </label>
-          </div>
-          <div class="step-actions">
-            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="nextStep()">Next →</button>
-          </div>
-        </div>
-
-        <!-- STEP 7: FINAL SETTINGS & GENERATE -->
-        <div class="step hidden" data-step="7" id="finalStep">
-          <h2>Reel Settings & Generate</h2>
-          <p>Final touches before generating your storyboard</p>
+        <!-- STEP 5: REEL LENGTH (MOVED HERE - was Step 7) -->
+        <div class="step hidden" data-step="5" id="reelStep">
+          <h2>Reel Length & Tone</h2>
+          <p>Set your video duration and tone before filming locations</p>
           <div class="form-group">
             <label class="form-label">Reel Length</label>
             <select id="reelLength" class="form-select" onchange="document.getElementById('summaryReel').textContent = this.value + 's'">
@@ -323,7 +288,53 @@
           </div>
           <div class="step-actions">
             <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="generateStoryboard()">✨ Generate Storyboard →</button>
+            <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+          </div>
+        </div>
+
+        <!-- STEP 6: LOCATIONS (MOVED HERE - was Step 5) -->
+        <div class="step hidden" data-step="6" id="locationStep">
+          <h2>Where Should We Film?</h2>
+          <p id="locationDesc"></p>
+          <small style="color: #999; display: block; margin-bottom: 15px;">💡 Tip: Click multiple locations to select them all</small>
+          <div class="options-grid" id="locationGrid"></div>
+          <div class="step-actions">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+          </div>
+        </div>
+
+        <!-- STEP 7: B-ROLL STRATEGY -->
+        <div class="step hidden" data-step="7" id="brollStep">
+          <h2>B-Roll Strategy</h2>
+          <p>How much background footage vs talking head?</p>
+          <div class="options-grid">
+            <label class="option-card" onclick="selectBroll('mostly', this)">
+              <div class="option-icon">🎬</div>
+              <div class="option-name">Mostly B-Roll (70%)</div>
+            </label>
+            <label class="option-card" onclick="selectBroll('some', this)">
+              <div class="option-icon">🎥</div>
+              <div class="option-name">Some B-Roll (50%)</div>
+            </label>
+            <label class="option-card" onclick="selectBroll('none', this)">
+              <div class="option-icon">📱</div>
+              <div class="option-name">No B-Roll</div>
+            </label>
+          </div>
+          <div class="step-actions">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+          </div>
+        </div>
+
+        <!-- STEP 8: FINAL GENERATE (was Step 7) -->
+        <div class="step hidden" data-step="8" id="finalStep">
+          <h2>Ready to Generate</h2>
+          <p>Review your selections and generate your storyboard</p>
+          <div class="step-actions">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" id="generateBtn" onclick="generateStoryboard()">✨ Generate Storyboard →</button>
           </div>
         </div>
       </div>
@@ -341,6 +352,10 @@
         <div class="summary-row">
           <span class="summary-label">Audience:</span>
           <span class="summary-value" id="summaryAudience">-</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Locations:</span>
+          <span class="summary-value" id="summaryLocations">-</span>
         </div>
         <div class="summary-row">
           <span class="summary-label">Reel Length:</span>
@@ -525,7 +540,6 @@
       document.getElementById('summaryBiz').textContent = businessData[biz].name;
     }
 
-    // BUG FIX #1: Objective grid now populates after nextStep increments
     function populateObjectives() {
       if (!state.business) return;
       const objectives = businessData[state.business].objectives;
@@ -549,7 +563,6 @@
       document.getElementById('summaryObjective').textContent = selected.name;
     }
 
-    // BUG FIX #2: Campaign details now handles missing objective gracefully + supports textarea
     function populateCampaignDetails() {
       if (!state.objective) {
         const content = document.getElementById('campaignDetailsContent');
@@ -570,7 +583,6 @@
       title.textContent = detailConfig.title;
       desc.textContent = detailConfig.desc;
       
-      // CHANGE #1: Support textarea for longer form fields
       content.innerHTML = detailConfig.fields.map(field => {
         if (field.type === 'textarea') {
           return `
@@ -603,7 +615,6 @@
       updateStepDisplay();
     }
 
-    // CHANGE #2: Start Over button - resets everything
     function startOver() {
       state = {
         business: null,
@@ -621,12 +632,10 @@
         voiceTone: null
       };
       
-      // Reset UI
       document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('#businessGrid .option-card').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('#objectiveGrid .option-card').forEach(c => c.classList.remove('selected'));
       
-      // Clear form inputs
       document.getElementById('websiteUrl').value = '';
       document.getElementById('businessName').value = '';
       document.getElementById('uvp').value = '';
@@ -637,17 +646,15 @@
       document.getElementById('voiceTone').value = '';
       document.getElementById('apiInput').value = '';
       
-      // Reset sidebar
       document.getElementById('summaryBiz').textContent = '-';
       document.getElementById('summaryObjective').textContent = '-';
       document.getElementById('summaryAudience').textContent = '-';
+      document.getElementById('summaryLocations').textContent = '-';
       document.getElementById('summaryReel').textContent = '30s';
       
-      // Show goal screen again
       document.getElementById('goalScreen').classList.remove('hidden');
       document.getElementById('wizardScreen').classList.add('hidden');
       
-      // Reset continue button
       document.getElementById('continueBtn').disabled = true;
     }
 
@@ -659,6 +666,7 @@
       document.querySelectorAll('[data-step="2"]')[0].classList.remove('hidden');
       document.getElementById('campaignDetailsStep').classList.remove('hidden');
       document.querySelectorAll('[data-step="4"]')[0].classList.remove('hidden');
+      document.getElementById('reelStep').classList.remove('hidden');
       document.getElementById('locationStep').classList.remove('hidden');
       document.getElementById('brollStep').classList.remove('hidden');
       document.getElementById('finalStep').classList.remove('hidden');
@@ -680,39 +688,44 @@
       ).join('');
     }
 
+    // FIX #1: Multi-select locations - allow multiple selections with toggle
     function selectLocation(loc, elem) {
-      if (!state.locations.includes(loc)) state.locations = [loc];
-      document.querySelectorAll('#locationGrid .option-card').forEach(c => c.classList.remove('selected'));
-      elem.classList.add('selected');
+      if (state.locations.includes(loc)) {
+        state.locations = state.locations.filter(l => l !== loc);
+      } else {
+        state.locations.push(loc);
+      }
+      elem.classList.toggle('selected');
+      updateLocationsSummary();
     }
 
-    // BUG FIX #1: Move populate calls AFTER step increment
+    function updateLocationsSummary() {
+      document.getElementById('summaryLocations').textContent = state.locations.length > 0 ? state.locations.join(', ') : '-';
+    }
+
     function nextStep() {
       currentStep++;
       updateStepDisplay();
       
-      // Populate content AFTER moving to new step
       if (currentStep === 2) {
         populateObjectives();
       } else if (currentStep === 3) {
         populateCampaignDetails();
-      } else if (currentStep === 5) {
+      } else if (currentStep === 6) {
         populateLocations();
       }
     }
 
-    // BUG FIX #3: Back button re-populates content when going backwards
     function prevStep() {
       if (currentStep > 1) {
         currentStep--;
         updateStepDisplay();
         
-        // Re-populate content when going back
         if (currentStep === 2 && state.business) {
           populateObjectives();
         } else if (currentStep === 3 && state.objective) {
           populateCampaignDetails();
-        } else if (currentStep === 5 && state.business) {
+        } else if (currentStep === 6 && state.business) {
           populateLocations();
         }
       }
@@ -733,7 +746,6 @@
       document.getElementById('stepCounter').textContent = `Step ${currentStep} of ${visibleSteps.length}`;
     }
 
-    // BUG FIX #4: Real-time summary sidebar updates
     function updateAudienceSummary() {
       const age = document.getElementById('ageRange').value;
       const gender = document.getElementById('genderDiversity').value;
@@ -759,12 +771,16 @@
       }
     }
 
+    // FIX #2: Save button reference before async to avoid event.target undefined error
     async function generateStoryboard() {
       const apiKey = document.getElementById('apiInput').value;
       if (!apiKey) {
         alert('Enter API key');
         return;
       }
+
+      // Save button reference BEFORE async
+      const btn = document.getElementById('generateBtn');
 
       state.websiteUrl = document.getElementById('websiteUrl').value;
       state.businessName = document.getElementById('businessName').value || 'Your Business';
@@ -778,7 +794,6 @@
       const prompt = buildEnhancedPrompt();
 
       try {
-        const btn = event.target;
         btn.textContent = '⏳ Generating...';
         btn.disabled = true;
 
@@ -831,8 +846,8 @@
         btn.disabled = false;
       } catch (e) {
         alert('Error: ' + e.message);
-        event.target.textContent = '✨ Generate Storyboard →';
-        event.target.disabled = false;
+        btn.textContent = '✨ Generate Storyboard →';
+        btn.disabled = false;
       }
     }
 
