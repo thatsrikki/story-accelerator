@@ -180,40 +180,77 @@
           </div>
         </div>
 
-        <!-- STEP 2: PRODUCT INFO (Launch Only) -->
-        <div class="step hidden" data-step="2" id="productStep">
-          <h2>Tell Us About Your Product</h2>
-          <p>What problem does it solve?</p>
-          <div class="form-group">
-            <label class="form-label">Problem it solves</label>
-            <input type="text" id="problem" class="form-input" placeholder="e.g., People spend too much time on slow coffee machines">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Hero Feature</label>
-            <input type="text" id="heroFeature" class="form-input" placeholder="e.g., 30-second brew">
-          </div>
+        <!-- STEP 2: CAMPAIGN OBJECTIVE (Dynamic per business) -->
+        <div class="step hidden" data-step="2">
+          <h2>What's Your Campaign Objective?</h2>
+          <p>Select the focus for your video</p>
+          <div class="options-grid" id="objectiveGrid"></div>
           <div class="step-actions">
             <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
             <button class="btn btn-primary" onclick="nextStep()">Next →</button>
           </div>
         </div>
 
-        <!-- STEP 2: PROMO INFO (Promo Only) -->
-        <div class="step hidden" data-step="2" id="promoStep">
-          <h2>Promo Details</h2>
-          <p>What's the offer and time limit?</p>
+        <!-- STEP 3: CAMPAIGN DETAILS (Conditional) -->
+        <div class="step hidden" data-step="3" id="campaignDetailsStep">
+          <h2 id="campaignDetailsTitle">Campaign Details</h2>
+          <p id="campaignDetailsDesc"></p>
+          <div id="campaignDetailsContent"></div>
+          <div class="step-actions">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: WEBSITE & DEMOGRAPHICS -->
+        <div class="step hidden" data-step="4">
+          <h2>Business Context & Audience</h2>
+          <p>Help us understand your business and target audience</p>
           <div class="form-group">
-            <label class="form-label">Offer</label>
-            <input type="text" id="offer" class="form-input" placeholder="e.g., 40% off all memberships">
+            <label class="form-label">Website URL (optional)</label>
+            <input type="url" id="websiteUrl" class="form-input" placeholder="https://myrestaurant.com">
+            <small style="color: #999; display: block; margin-top: 6px;">We'll auto-extract your USP and services</small>
           </div>
           <div class="form-group">
-            <label class="form-label">Time Limit</label>
-            <select id="timeLimit" class="form-select">
-              <option>Select...</option>
-              <option>24 hours only</option>
-              <option>48 hours only</option>
-              <option>This weekend</option>
-              <option>Until Friday</option>
+            <label class="form-label">Business Name</label>
+            <input type="text" id="businessName" class="form-input" placeholder="e.g., Jerusalem Grill">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unique Value Proposition</label>
+            <input type="text" id="uvp" class="form-input" placeholder="e.g., 30 years of authentic flavor">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Audience Age Range</label>
+            <select id="ageRange" class="form-select">
+              <option value="">Select...</option>
+              <option value="Gen Z (13-25)">Gen Z (13-25)</option>
+              <option value="Millennials (26-40)">Millennials (26-40)</option>
+              <option value="Gen X (41-56)">Gen X (41-56)</option>
+              <option value="Boomers (57+)">Boomers (57+)</option>
+              <option value="Mixed">Mixed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender Diversity</label>
+            <select id="genderDiversity" class="form-select">
+              <option value="">Select...</option>
+              <option value="All genders">All genders</option>
+              <option value="Predominantly male">Predominantly male</option>
+              <option value="Predominantly female">Predominantly female</option>
+              <option value="Mixed">Mixed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary Setting/Context</label>
+            <select id="primarySetting" class="form-select">
+              <option value="">Select...</option>
+              <option value="Home office/Remote">Home office/Remote</option>
+              <option value="Retail/In-store">Retail/In-store</option>
+              <option value="Restaurant/Food">Restaurant/Food</option>
+              <option value="Classroom/Education">Classroom/Education</option>
+              <option value="Gym/Wellness">Gym/Wellness</option>
+              <option value="Outdoor">Outdoor</option>
+              <option value="Mixed">Mixed</option>
             </select>
           </div>
           <div class="step-actions">
@@ -222,20 +259,8 @@
           </div>
         </div>
 
-        <!-- STEP 2: TEAM SELECTION (Team Only) -->
-        <div class="step hidden" data-step="2" id="teamStep">
-          <h2>Who Are We Featuring?</h2>
-          <p>Add 1-3 team members</p>
-          <div id="teamMembers"></div>
-          <button class="btn btn-secondary" onclick="addTeamMember()" style="margin-top: 20px;">+ Add Member</button>
-          <div class="step-actions">
-            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="nextStep()">Next →</button>
-          </div>
-        </div>
-
-        <!-- STEP 3: LOCATIONS -->
-        <div class="step hidden" data-step="3" id="locationStep">
+        <!-- STEP 5: LOCATIONS -->
+        <div class="step hidden" data-step="5" id="locationStep">
           <h2>Where Should We Film?</h2>
           <p id="locationDesc"></p>
           <div class="options-grid" id="locationGrid"></div>
@@ -245,8 +270,8 @@
           </div>
         </div>
 
-        <!-- STEP 4: B-ROLL STRATEGY -->
-        <div class="step hidden" data-step="4" id="brollStep">
+        <!-- STEP 6: B-ROLL STRATEGY -->
+        <div class="step hidden" data-step="6" id="brollStep">
           <h2>B-Roll Strategy</h2>
           <p>How much background footage vs talking head?</p>
           <div class="options-grid">
@@ -269,18 +294,10 @@
           </div>
         </div>
 
-        <!-- STEP 5: BRAND & VOICE -->
-        <div class="step hidden" data-step="5" id="voiceStep">
-          <h2>Brand & Voice</h2>
-          <p>Tell us about your business</p>
-          <div class="form-group">
-            <label class="form-label">Business Name</label>
-            <input type="text" id="businessName" class="form-input" placeholder="e.g., Jerusalem Grill">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Unique Value</label>
-            <input type="text" id="uvp" class="form-input" placeholder="e.g., 30 years of authentic flavor">
-          </div>
+        <!-- STEP 7: FINAL SETTINGS & GENERATE -->
+        <div class="step hidden" data-step="7" id="finalStep">
+          <h2>Reel Settings & Generate</h2>
+          <p>Final touches before generating your storyboard</p>
           <div class="form-group">
             <label class="form-label">Reel Length</label>
             <select id="reelLength" class="form-select">
@@ -290,9 +307,20 @@
               <option value="60">60 seconds</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label">Video Tone/Voice</label>
+            <select id="voiceTone" class="form-select">
+              <option value="">Select...</option>
+              <option value="Warm & Friendly">Warm & Friendly</option>
+              <option value="Bold & Energetic">Bold & Energetic</option>
+              <option value="Professional & Authoritative">Professional & Authoritative</option>
+              <option value="Witty & Humorous">Witty & Humorous</option>
+              <option value="Inspirational">Inspirational</option>
+            </select>
+          </div>
           <div class="step-actions">
             <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="generateStoryboard()">✨ Generate →</button>
+            <button class="btn btn-primary" onclick="generateStoryboard()">✨ Generate Storyboard →</button>
           </div>
         </div>
       </div>
@@ -300,15 +328,19 @@
       <aside class="sidebar">
         <h3>Summary</h3>
         <div class="summary-row">
-          <span class="summary-label">Goal:</span>
-          <span class="summary-value" id="summaryGoal">-</span>
-        </div>
-        <div class="summary-row">
           <span class="summary-label">Business:</span>
           <span class="summary-value" id="summaryBiz">-</span>
         </div>
         <div class="summary-row">
-          <span class="summary-label">Reel:</span>
+          <span class="summary-label">Objective:</span>
+          <span class="summary-value" id="summaryObjective">-</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Audience:</span>
+          <span class="summary-value" id="summaryAudience">-</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Reel Length:</span>
           <span class="summary-value" id="summaryReel">30s</span>
         </div>
       </aside>
@@ -317,62 +349,168 @@
 
   <script>
     let state = {
-      goal: null,
       business: null,
+      objective: null,
+      campaignDetails: {},
+      websiteUrl: null,
+      businessName: null,
+      uvp: null,
+      ageRange: null,
+      genderDiversity: null,
+      primarySetting: null,
       locations: [],
       broll: null,
-      team: [],
-      reel: 30
+      reelLength: 30,
+      voiceTone: null
     };
 
     const businessData = {
-      restaurant: { name: 'Restaurant', locations: ['Kitchen', 'Dining', 'Counter', 'Prep Station'] },
-      cafe: { name: 'Cafe', locations: ['Counter', 'Seating', 'Kitchen', 'Patio'] },
-      bar: { name: 'Bar', locations: ['Bar Counter', 'Seating', 'Dance Floor', 'Lounge'] },
-      hotel: { name: 'Hotel', locations: ['Lobby', 'Guest Room', 'Restaurant', 'Spa'] },
-      wellness: { name: 'Wellness', locations: ['Training Room', 'Recovery', 'Studio', 'Outdoor'] },
-      education: { name: 'Education', locations: ['Classroom', 'Lab', 'Studio', 'Office'] }
+      restaurant: { 
+        name: 'Restaurant', 
+        locations: ['Kitchen', 'Dining Area', 'Counter', 'Prep Station', 'Entrance', 'Patio'],
+        objectives: [
+          { id: 'brand', icon: '📈', name: 'Brand Intro', desc: 'Story & history' },
+          { id: 'product', icon: '🍽️', name: 'Product Showcase', desc: 'Signature dish' },
+          { id: 'team', icon: '👥', name: 'Meet the Team', desc: 'Chef/owner' },
+          { id: 'seasonal', icon: '🎉', name: 'Seasonal Special', desc: 'Limited offer' },
+          { id: 'flash', icon: '🔥', name: 'Flash Sale', desc: 'Daily deal' },
+          { id: 'educational', icon: '📚', name: 'How-To/Educational', desc: 'Recipe/technique' },
+          { id: 'testimonial', icon: '⭐', name: 'Testimonial', desc: 'Customer story' }
+        ]
+      },
+      cafe: { 
+        name: 'Cafe', 
+        locations: ['Counter', 'Seating Area', 'Kitchen', 'Patio', 'Entrance'],
+        objectives: [
+          { id: 'brand', icon: '📈', name: 'Brand Intro', desc: 'Cafe story' },
+          { id: 'product', icon: '☕', name: 'Menu Showcase', desc: 'Drinks/pastries' },
+          { id: 'team', icon: '👥', name: 'Meet the Barista', desc: 'Staff spotlight' },
+          { id: 'seasonal', icon: '🎉', name: 'Seasonal Drink', desc: 'New menu item' },
+          { id: 'flash', icon: '🔥', name: 'Limited Time Offer', desc: 'Quick promo' },
+          { id: 'educational', icon: '📚', name: 'Coffee Tips', desc: 'How-to guide' },
+          { id: 'testimonial', icon: '⭐', name: 'Customer Love', desc: 'Reviews' }
+        ]
+      },
+      bar: { 
+        name: 'Bar', 
+        locations: ['Bar Counter', 'Seating', 'Dance Floor', 'VIP Area', 'Entrance'],
+        objectives: [
+          { id: 'brand', icon: '📈', name: 'Vibe & Culture', desc: 'Bar atmosphere' },
+          { id: 'product', icon: '🍸', name: 'Signature Drink', desc: 'Cocktail feature' },
+          { id: 'team', icon: '👥', name: 'Meet the Mixologist', desc: 'Bartender' },
+          { id: 'seasonal', icon: '🎉', name: 'Happy Hour', desc: 'Special pricing' },
+          { id: 'flash', icon: '🔥', name: 'Tonight Only', desc: 'Flash promo' },
+          { id: 'educational', icon: '📚', name: 'Drink Tutorial', desc: 'How it's made' },
+          { id: 'testimonial', icon: '⭐', name: 'Guest Experience', desc: 'Reviews' }
+        ]
+      },
+      hotel: { 
+        name: 'Hotel', 
+        locations: ['Lobby', 'Guest Room', 'Restaurant', 'Pool/Spa', 'Conference Room'],
+        objectives: [
+          { id: 'brand', icon: '📈', name: 'Brand Story', desc: 'Hotel heritage' },
+          { id: 'product', icon: '🏨', name: 'Room Showcase', desc: 'Amenities' },
+          { id: 'team', icon: '👥', name: 'Meet Our Team', desc: 'Staff' },
+          { id: 'seasonal', icon: '🎉', name: 'Seasonal Package', desc: 'Special rates' },
+          { id: 'flash', icon: '🔥', name: 'Last-Minute Deal', desc: 'Limited bookings' },
+          { id: 'educational', icon: '📚', name: 'Travel Tips', desc: 'Destination guide' },
+          { id: 'testimonial', icon: '⭐', name: 'Guest Reviews', desc: 'Testimonials' }
+        ]
+      },
+      wellness: { 
+        name: 'Wellness', 
+        locations: ['Studio', 'Equipment Room', 'Spa Area', 'Outdoor Space', 'Lobby'],
+        objectives: [
+          { id: 'brand', icon: '📈', name: 'Mission & Values', desc: 'Wellness philosophy' },
+          { id: 'product', icon: '💪', name: 'Class Showcase', desc: 'Fitness classes' },
+          { id: 'team', icon: '👥', name: 'Meet Your Trainer', desc: 'Coach spotlight' },
+          { id: 'seasonal', icon: '🎉', name: 'New Year/Season', desc: 'Seasonal promo' },
+          { id: 'flash', icon: '🔥', name: 'Limited Trial', desc: '7-day free pass' },
+          { id: 'educational', icon: '📚', name: 'Fitness Tip', desc: 'Health advice' },
+          { id: 'testimonial', icon: '⭐', name: 'Transformation', desc: 'Member success' }
+        ]
+      },
+      education: { 
+        name: 'Education', 
+        locations: ['Classroom', 'Lab/Demo Space', 'Office', 'Outdoor', 'Studio'],
+        objectives: [
+          { id: 'brand', icon: '📈', name: 'School Intro', desc: 'Mission & values' },
+          { id: 'product', icon: '📖', name: 'Course Overview', desc: 'Curriculum' },
+          { id: 'team', icon: '👥', name: 'Meet the Instructor', desc: 'Teacher spotlight' },
+          { id: 'seasonal', icon: '🎉', name: 'Enrollment Push', desc: 'New cohort' },
+          { id: 'flash', icon: '🔥', name: 'Early Bird Bonus', desc: 'Limited seats' },
+          { id: 'educational', icon: '📚', name: 'Free Lesson Preview', desc: 'Sample content' },
+          { id: 'testimonial', icon: '⭐', name: 'Student Success', desc: 'Graduate stories' }
+        ]
+      }
+    };
+
+    const campaignDetailsFields = {
+      brand: {
+        title: 'Brand Story',
+        desc: 'What makes your story unique?',
+        fields: [
+          { name: 'storyAngle', label: 'What\'s your origin or key story?', placeholder: 'e.g., Founded in 1993 by a family with a passion for authentic cuisine' },
+          { name: 'emotion', label: 'What emotion should viewers feel?', placeholder: 'e.g., Nostalgia, trust, excitement' }
+        ]
+      },
+      product: {
+        title: 'Product/Service Details',
+        desc: 'What are you showcasing?',
+        fields: [
+          { name: 'productName', label: 'Product/Service name', placeholder: 'e.g., Our signature kufta burger' },
+          { name: 'whySpecial', label: 'Why is it special?', placeholder: 'e.g., Hand-made with family recipe, premium ingredients' }
+        ]
+      },
+      team: {
+        title: 'Team Member Info',
+        desc: 'Who are we featuring?',
+        fields: [
+          { name: 'teamMember1Name', label: 'Team Member 1 - Name', placeholder: 'e.g., Chef Ahmed' },
+          { name: 'teamMember1Role', label: 'Team Member 1 - Role', placeholder: 'e.g., Executive Chef' },
+          { name: 'teamMember1Story', label: 'Team Member 1 - Their story', placeholder: 'e.g., 25 years experience, trained in Lebanon' }
+        ]
+      },
+      seasonal: {
+        title: 'Seasonal Special Details',
+        desc: 'What\'s the limited offer?',
+        fields: [
+          { name: 'offer', label: 'What\'s the offer?', placeholder: 'e.g., $12 kufta burger + fries' },
+          { name: 'validWhen', label: 'Valid when?', placeholder: 'e.g., Dec 10-24, after 4pm' }
+        ]
+      },
+      flash: {
+        title: 'Flash Sale Details',
+        desc: 'Create urgency!',
+        fields: [
+          { name: 'deal', label: 'What\'s the deal?', placeholder: 'e.g., BOGO burgers' },
+          { name: 'timeWindow', label: 'Time window', placeholder: 'e.g., Today only 5-9pm' },
+          { name: 'scarcity', label: 'Scarcity angle (optional)', placeholder: 'e.g., First 30 customers' }
+        ]
+      },
+      educational: {
+        title: 'Educational Content',
+        desc: 'What will viewers learn?',
+        fields: [
+          { name: 'topic', label: 'Topic/What you\'re teaching', placeholder: 'e.g., How to make a perfect kufta at home' },
+          { name: 'takeaway', label: 'Key takeaway/result', placeholder: 'e.g., Viewer can recreate the dish with pro tips' }
+        ]
+      },
+      testimonial: {
+        title: 'Customer Testimonial',
+        desc: 'Share a success story',
+        fields: [
+          { name: 'customerName', label: 'Customer name & context', placeholder: 'e.g., Sarah, weekly customer for 2 years' },
+          { name: 'customerStory', label: 'Their story or quote', placeholder: 'e.g., "This is the only place my kids will eat. Worth the drive!" ' }
+        ]
+      }
     };
 
     let currentStep = 1;
     let visibleSteps = [];
 
     function selectGoal(goal, elem) {
-      state.goal = goal;
-      document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
-      elem.classList.add('selected');
-      document.getElementById('continueBtn').disabled = false;
-      const labels = { awareness: '📈 Brand Awareness', launch: '🚀 Product Launch', promo: '🔥 Flash Sale', team: '👥 Team Spotlight', showcase: '✨ Showcase' };
-      document.getElementById('summaryGoal').textContent = labels[goal];
-    }
-
-    function continueToWizard() {
-      if (!state.goal) return;
-      document.getElementById('goalScreen').classList.add('hidden');
-      document.getElementById('wizardScreen').classList.remove('hidden');
-      configureStepsForGoal();
-      updateStepDisplay();
-    }
-
-    function configureStepsForGoal() {
-      const allSteps = document.querySelectorAll('.step');
-      allSteps.forEach(s => s.classList.add('hidden'));
-      
-      document.querySelector('[data-step="1"]').classList.remove('hidden');
-      
-      if (state.goal === 'launch') document.getElementById('productStep').classList.remove('hidden');
-      else if (state.goal === 'promo') document.getElementById('promoStep').classList.remove('hidden');
-      else if (state.goal === 'team') document.getElementById('teamStep').classList.remove('hidden');
-      
-      if (state.goal !== 'promo' && state.goal !== 'team') {
-        document.getElementById('locationStep').classList.remove('hidden');
-      }
-      
-      document.getElementById('brollStep').classList.remove('hidden');
-      document.getElementById('voiceStep').classList.remove('hidden');
-      
-      visibleSteps = Array.from(document.querySelectorAll('.step')).filter(s => !s.classList.contains('hidden'));
-      currentStep = 1;
+      // Not using this in new flow, but keeping for reference
     }
 
     function selectBusiness(biz, elem) {
@@ -380,6 +518,50 @@
       document.querySelectorAll('#businessGrid .option-card').forEach(c => c.classList.remove('selected'));
       elem.classList.add('selected');
       document.getElementById('summaryBiz').textContent = businessData[biz].name;
+      nextStep();
+    }
+
+    function populateObjectives() {
+      if (!state.business) return;
+      const objectives = businessData[state.business].objectives;
+      const grid = document.getElementById('objectiveGrid');
+      grid.innerHTML = objectives.map(obj => 
+        `<label class="option-card" onclick="selectObjective('${obj.id}', this)">
+          <div class="option-icon">${obj.icon}</div>
+          <div class="option-name">${obj.name}</div>
+          <div style="font-size: 11px; color: #999; margin-top: 4px;">${obj.desc}</div>
+        </label>`
+      ).join('');
+    }
+
+    function selectObjective(objId, elem) {
+      state.objective = objId;
+      document.querySelectorAll('#objectiveGrid .option-card').forEach(c => c.classList.remove('selected'));
+      elem.classList.add('selected');
+      
+      const objectives = businessData[state.business].objectives;
+      const selected = objectives.find(o => o.id === objId);
+      document.getElementById('summaryObjective').textContent = selected.name;
+    }
+
+    function populateCampaignDetails() {
+      if (!state.objective) return;
+      const detailConfig = campaignDetailsFields[state.objective];
+      if (!detailConfig) return;
+
+      const title = document.getElementById('campaignDetailsTitle');
+      const desc = document.getElementById('campaignDetailsDesc');
+      const content = document.getElementById('campaignDetailsContent');
+
+      title.textContent = detailConfig.title;
+      desc.textContent = detailConfig.desc;
+      
+      content.innerHTML = detailConfig.fields.map(field => `
+        <div class="form-group">
+          <label class="form-label">${field.label}</label>
+          <input type="text" class="form-input" placeholder="${field.placeholder}" onchange="state.campaignDetails['${field.name}'] = this.value;">
+        </div>
+      `).join('');
     }
 
     function selectBroll(type, elem) {
@@ -388,53 +570,34 @@
       elem.classList.add('selected');
     }
 
-    function addTeamMember() {
-      if (state.team.length >= 3) return;
-      const idx = state.team.length;
-      state.team.push({ name: '', role: '' });
-      const cont = document.getElementById('teamMembers');
-      const div = document.createElement('div');
-      div.className = 'form-group';
-      div.innerHTML = `<label class="form-label">Team Member ${idx + 1}</label>
-        <input type="text" placeholder="Name" class="form-input" style="margin-bottom: 8px;" onchange="state.team[${idx}].name = this.value;">
-        <input type="text" placeholder="Role" class="form-input" onchange="state.team[${idx}].role = this.value;">`;
-      cont.appendChild(div);
-    }
-
-    function nextStep() {
-      if (state.goal === 'launch' && currentStep === 1) currentStep = 2;
-      else if (state.goal === 'promo' && currentStep === 1) currentStep = 2;
-      else if (state.goal === 'team' && currentStep === 1) currentStep = 2;
-      else if (currentStep === 2 && (state.goal === 'launch' || state.goal === 'promo' || state.goal === 'team')) currentStep = state.goal === 'team' ? 4 : 3;
-      else if (currentStep === 2) currentStep = 3;
-      else currentStep++;
-      
+    function continueToWizard() {
+      document.getElementById('goalScreen').classList.add('hidden');
+      document.getElementById('wizardScreen').classList.remove('hidden');
+      populateStepFlow();
       updateStepDisplay();
     }
 
-    function prevStep() {
-      if (currentStep > 1) currentStep--;
-      updateStepDisplay();
-    }
-
-    function updateStepDisplay() {
-      visibleSteps.forEach((s, i) => {
-        const stepNum = parseInt(s.dataset.step);
-        s.classList.remove('active');
-        if (i === currentStep - 1) s.classList.add('active');
-      });
+    function populateStepFlow() {
+      const allSteps = document.querySelectorAll('.step');
+      allSteps.forEach(s => s.classList.add('hidden'));
       
-      if (state.business && !document.getElementById('locationGrid').innerHTML) {
-        populateLocations();
-      }
+      // Show in order: Business Type, Objectives, Campaign Details, Demographics, Locations, B-Roll, Final
+      document.querySelectorAll('[data-step="1"]')[0].classList.remove('hidden');
+      document.querySelectorAll('[data-step="2"]')[0].classList.remove('hidden');
+      document.getElementById('campaignDetailsStep').classList.remove('hidden');
+      document.querySelectorAll('[data-step="4"]')[0].classList.remove('hidden');
+      document.getElementById('locationStep').classList.remove('hidden');
+      document.getElementById('brollStep').classList.remove('hidden');
+      document.getElementById('finalStep').classList.remove('hidden');
       
-      updateProgress();
+      visibleSteps = Array.from(document.querySelectorAll('.step')).filter(s => !s.classList.contains('hidden'));
+      currentStep = 1;
     }
 
     function populateLocations() {
       if (!state.business) return;
       const locs = businessData[state.business].locations;
-      document.getElementById('locationDesc').textContent = `Choose primary location(s) for ${businessData[state.business].name}`;
+      document.getElementById('locationDesc').textContent = `Choose filming location(s) for ${businessData[state.business].name}`;
       const grid = document.getElementById('locationGrid');
       grid.innerHTML = locs.map(loc => 
         `<label class="option-card" onclick="selectLocation('${loc}', this)">
@@ -448,6 +611,33 @@
       if (!state.locations.includes(loc)) state.locations = [loc];
       document.querySelectorAll('#locationGrid .option-card').forEach(c => c.classList.remove('selected'));
       elem.classList.add('selected');
+    }
+
+    function nextStep() {
+      if (currentStep === 2) {
+        populateObjectives();
+      } else if (currentStep === 3) {
+        populateCampaignDetails();
+      } else if (currentStep === 5) {
+        populateLocations();
+      }
+      
+      currentStep++;
+      updateStepDisplay();
+    }
+
+    function prevStep() {
+      if (currentStep > 1) currentStep--;
+      updateStepDisplay();
+    }
+
+    function updateStepDisplay() {
+      visibleSteps.forEach((s, i) => {
+        s.classList.remove('active');
+        if (i === currentStep - 1) s.classList.add('active');
+      });
+      
+      updateProgress();
     }
 
     function updateProgress() {
@@ -475,29 +665,154 @@
         return;
       }
 
-      const biz = document.getElementById('businessName').value || 'Your Business';
-      const prompts = {
-        awareness: `Create a BRAND AWARENESS video storyboard for ${biz}. ${document.getElementById('uvp').value}. Include 3 scenes with voiceover and shot lists.`,
-        launch: `Create a PRODUCT LAUNCH storyboard. Problem: ${document.getElementById('problem').value}. Feature: ${document.getElementById('heroFeature').value}. Include 3 scenes.`,
-        promo: `Create a FLASH SALE storyboard. Offer: ${document.getElementById('offer').value}. Time: ${document.getElementById('timeLimit').value}. Make it urgent. 3 scenes.`,
-        team: `Create a TEAM SPOTLIGHT storyboard featuring ${state.team.map(t => t.name).join(', ')}. Show personality and culture. 3 scenes.`,
-        showcase: `Create a BUSINESS SHOWCASE storyboard for ${biz}. ${document.getElementById('uvp').value}. 3 scenes, ${document.getElementById('reelLength').value}s duration.`
-      };
+      // Collect all form data
+      state.websiteUrl = document.getElementById('websiteUrl').value;
+      state.businessName = document.getElementById('businessName').value || 'Your Business';
+      state.uvp = document.getElementById('uvp').value || 'Premium quality';
+      state.ageRange = document.getElementById('ageRange').value || 'Mixed';
+      state.genderDiversity = document.getElementById('genderDiversity').value || 'All';
+      state.primarySetting = document.getElementById('primarySetting').value || 'Mixed';
+      state.reelLength = document.getElementById('reelLength').value;
+      state.voiceTone = document.getElementById('voiceTone').value || 'Professional';
+
+      document.getElementById('summaryReel').textContent = state.reelLength + 's';
+
+      // Build comprehensive prompt
+      const prompt = buildEnhancedPrompt();
 
       try {
+        const btn = event.target;
+        btn.textContent = '⏳ Generating...';
+        btn.disabled = true;
+
         const resp = await fetch('https://api.perplexity.ai/chat/completions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-          body: JSON.stringify({ model: 'sonar', messages: [{ role: 'user', content: prompts[state.goal] }], max_tokens: 3000 })
+          body: JSON.stringify({ model: 'sonar', messages: [{ role: 'user', content: prompt }], max_tokens: 4000 })
         });
-        if (!resp.ok) throw new Error('API Error');
+        if (!resp.ok) throw new Error('API Error: ' + resp.statusText);
         const data = await resp.json();
-        const win = window.open('', '_blank');
-        win.document.write(`<pre>${data.choices[0].message.content}</pre>`);
+        const storyboard = data.choices[0].message.content;
+
+        // Display in formatted window
+        const win = window.open('', '_blank', 'width=1000,height=800');
+        win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Video Storyboard - ${state.businessName}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; margin: 0; padding: 40px; }
+    .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    h1 { color: #333; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
+    .metadata { background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; }
+    .metadata div { margin: 8px 0; }
+    .label { font-weight: 600; color: #666; }
+    .value { color: #333; }
+    pre { background: #f5f5f5; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+    button { background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    button:hover { background: #764ba2; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 ${state.businessName} - Video Storyboard</h1>
+    <div class="metadata">
+      <div><span class="label">Business Type:</span> <span class="value">${businessData[state.business].name}</span></div>
+      <div><span class="label">Objective:</span> <span class="value">${state.objective.toUpperCase()}</span></div>
+      <div><span class="label">Duration:</span> <span class="value">${state.reelLength} seconds</span></div>
+      <div><span class="label">Target Audience:</span> <span class="value">${state.ageRange} | ${state.genderDiversity} | ${state.primarySetting}</span></div>
+      <div><span class="label">Tone:</span> <span class="value">${state.voiceTone}</span></div>
+      <div><span class="label">Filming Locations:</span> <span class="value">${state.locations.join(', ')}</span></div>
+      <div><span class="label">B-Roll Strategy:</span> <span class="value">${state.broll === 'mostly' ? '70% B-Roll' : state.broll === 'some' ? '50% B-Roll' : 'No B-Roll'}</span></div>
+    </div>
+    <pre>${storyboard}</pre>
+    <button onclick="window.print()">🖨️ Print/Save as PDF</button>
+  </div>
+</body>
+</html>`);
+        btn.textContent = '✨ Generate Storyboard →';
+        btn.disabled = false;
       } catch (e) {
         alert('Error: ' + e.message);
+        event.target.textContent = '✨ Generate Storyboard →';
+        event.target.disabled = false;
       }
     }
+
+    function buildEnhancedPrompt() {
+      let prompt = `You are an expert video production director. Generate a detailed, production-ready video storyboard with the following context:
+
+BUSINESS CONTEXT:
+- Business Type: ${businessData[state.business].name}
+- Business Name: ${state.businessName}
+- USP: ${state.uvp}
+- Website: ${state.websiteUrl || 'Not provided'}
+
+CAMPAIGN DETAILS:
+- Objective: ${state.objective.toUpperCase()}
+`;
+
+      // Add objective-specific details
+      Object.entries(state.campaignDetails).forEach(([key, value]) => {
+        if (value) {
+          prompt += `- ${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}\n`;
+        }
+      });
+
+      prompt += `
+TARGET AUDIENCE:
+- Age Range: ${state.ageRange}
+- Gender Diversity: ${state.genderDiversity}
+- Primary Setting/Context: ${state.primarySetting}
+
+PRODUCTION SPECIFICATIONS:
+- Duration: ${state.reelLength} seconds
+- Format: Reel (9:16 mobile-first)
+- B-Roll Strategy: ${state.broll === 'mostly' ? '70% Background Footage + 30% Talking Head' : state.broll === 'some' ? '50% Balanced Mix' : '100% Talking Head - Direct to Camera'}
+- Tone/Voice: ${state.voiceTone}
+- Filming Locations: ${state.locations.join(', ')}
+
+STORYBOARD STRUCTURE (Generate exactly ${Math.ceil(state.reelLength / 15)} scenes):
+For each scene, provide:
+1. SCRIPT: Exact voiceover/dialogue (word count ~${Math.round(state.reelLength * 2)} words total)
+2. SHOT LIST: Specific camera shots, angles, movements, duration in seconds
+3. B-ROLL SUGGESTIONS: Demographic-aware stock footage search terms including age, gender, setting
+   Format: "subject, gender, age range, setting, mood/lighting"
+4. PROPS/EQUIPMENT: What's needed in frame
+5. TIMING: Exact duration of this scene in seconds
+
+Demographics-Aware B-Roll Guidance:
+Match casting and visuals to your audience. For example:
+- Age: Millennials (26-40) → Show relatable lifestyle, modern aesthetics
+- Gender: Mixed → Include diverse representation, multiple perspectives
+- Setting: ${state.primarySetting} → Prioritize relevant environments
+
+FINAL OUTPUT FORMAT:
+---
+SCENE 1:
+SCRIPT: [dialogue]
+SHOT LIST: [details]
+B-ROLL SUGGESTIONS: [stock search terms]
+TIMING: [X seconds]
+
+SCENE 2:
+[repeat structure]
+
+EQUIPMENT NEEDED: [camera gear, lighting, audio]
+TOTAL PRODUCTION TIME: [estimated hours]
+KEY INSIGHTS: [2-3 production tips specific to this objective]
+---
+
+Generate a storyboard that is specific, actionable, and ready for production. Use the objective and campaign details to inform creative choices.`;
+
+      return prompt;
+    }
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+      continueToWizard();
+    });
   </script>
 </body>
 </html>
