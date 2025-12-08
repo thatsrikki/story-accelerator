@@ -29,6 +29,8 @@
     .goal-continue { text-align: center; margin-top: 30px; }
     .btn-continue { padding: 14px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
     .btn-continue:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-reset { padding: 14px 40px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: white; color: #667eea; border: 2px solid #667eea; margin-top: 15px; }
+    .btn-reset:hover { background: #667eea; color: white; }
     
     #wizardScreen { display: grid; grid-template-columns: 1fr 280px; gap: 30px; }
     
@@ -122,6 +124,7 @@
       
       <div class="goal-continue">
         <button class="btn-continue" onclick="continueToWizard()" id="continueBtn" disabled>Continue →</button>
+        <button class="btn-reset" onclick="startOver()">🔄 Start Over</button>
       </div>
     </div>
 
@@ -450,58 +453,58 @@
         title: 'Brand Story',
         desc: 'What makes your story unique?',
         fields: [
-          { name: 'storyAngle', label: 'What\'s your origin or key story?', placeholder: 'e.g., Founded in 1993 by a family with a passion for authentic cuisine' },
-          { name: 'emotion', label: 'What emotion should viewers feel?', placeholder: 'e.g., Nostalgia, trust, excitement' }
+          { name: 'storyAngle', label: 'What\'s your origin or key story?', placeholder: 'e.g., Founded in 1993 by a family with a passion for authentic cuisine', type: 'textarea' },
+          { name: 'emotion', label: 'What emotion should viewers feel?', placeholder: 'e.g., Nostalgia, trust, excitement', type: 'text' }
         ]
       },
       product: {
         title: 'Product/Service Details',
         desc: 'What are you showcasing?',
         fields: [
-          { name: 'productName', label: 'Product/Service name', placeholder: 'e.g., Our signature kufta burger' },
-          { name: 'whySpecial', label: 'Why is it special?', placeholder: 'e.g., Hand-made with family recipe, premium ingredients' }
+          { name: 'productName', label: 'Product/Service name', placeholder: 'e.g., Our signature kufta burger', type: 'text' },
+          { name: 'whySpecial', label: 'Why is it special?', placeholder: 'e.g., Hand-made with family recipe, premium ingredients', type: 'text' }
         ]
       },
       team: {
         title: 'Team Member Info',
         desc: 'Who are we featuring?',
         fields: [
-          { name: 'teamMember1Name', label: 'Team Member 1 - Name', placeholder: 'e.g., Chef Ahmed' },
-          { name: 'teamMember1Role', label: 'Team Member 1 - Role', placeholder: 'e.g., Executive Chef' },
-          { name: 'teamMember1Story', label: 'Team Member 1 - Their story', placeholder: 'e.g., 25 years experience, trained in Lebanon' }
+          { name: 'teamMember1Name', label: 'Team Member 1 - Name', placeholder: 'e.g., Chef Ahmed', type: 'text' },
+          { name: 'teamMember1Role', label: 'Team Member 1 - Role', placeholder: 'e.g., Executive Chef', type: 'text' },
+          { name: 'teamMember1Story', label: 'Team Member 1 - Their story', placeholder: 'e.g., 25 years experience, trained in Lebanon', type: 'textarea' }
         ]
       },
       seasonal: {
         title: 'Seasonal Special Details',
         desc: 'What\'s the limited offer?',
         fields: [
-          { name: 'offer', label: 'What\'s the offer?', placeholder: 'e.g., $12 kufta burger + fries' },
-          { name: 'validWhen', label: 'Valid when?', placeholder: 'e.g., Dec 10-24, after 4pm' }
+          { name: 'offer', label: 'What\'s the offer?', placeholder: 'e.g., $12 kufta burger + fries', type: 'text' },
+          { name: 'validWhen', label: 'Valid when?', placeholder: 'e.g., Dec 10-24, after 4pm', type: 'text' }
         ]
       },
       flash: {
         title: 'Flash Sale Details',
         desc: 'Create urgency!',
         fields: [
-          { name: 'deal', label: 'What\'s the deal?', placeholder: 'e.g., BOGO burgers' },
-          { name: 'timeWindow', label: 'Time window', placeholder: 'e.g., Today only 5-9pm' },
-          { name: 'scarcity', label: 'Scarcity angle (optional)', placeholder: 'e.g., First 30 customers' }
+          { name: 'deal', label: 'What\'s the deal?', placeholder: 'e.g., BOGO burgers', type: 'text' },
+          { name: 'timeWindow', label: 'Time window', placeholder: 'e.g., Today only 5-9pm', type: 'text' },
+          { name: 'scarcity', label: 'Scarcity angle (optional)', placeholder: 'e.g., First 30 customers', type: 'text' }
         ]
       },
       educational: {
         title: 'Educational Content',
         desc: 'What will viewers learn?',
         fields: [
-          { name: 'topic', label: 'Topic/What you\'re teaching', placeholder: 'e.g., How to make a perfect kufta at home' },
-          { name: 'takeaway', label: 'Key takeaway/result', placeholder: 'e.g., Viewer can recreate the dish with pro tips' }
+          { name: 'topic', label: 'Topic/What you\'re teaching', placeholder: 'e.g., How to make a perfect kufta at home', type: 'text' },
+          { name: 'takeaway', label: 'Key takeaway/result', placeholder: 'e.g., Viewer can recreate the dish with pro tips', type: 'textarea' }
         ]
       },
       testimonial: {
         title: 'Customer Testimonial',
         desc: 'Share a success story',
         fields: [
-          { name: 'customerName', label: 'Customer name & context', placeholder: 'e.g., Sarah, weekly customer for 2 years' },
-          { name: 'customerStory', label: 'Their story or quote', placeholder: 'e.g., "This is the only place my kids will eat. Worth the drive!" ' }
+          { name: 'customerName', label: 'Customer name & context', placeholder: 'e.g., Sarah, weekly customer for 2 years', type: 'text' },
+          { name: 'customerStory', label: 'Their story or quote', placeholder: 'e.g., "This is the only place my kids will eat. Worth the drive!" ', type: 'textarea' }
         ]
       }
     };
@@ -546,7 +549,7 @@
       document.getElementById('summaryObjective').textContent = selected.name;
     }
 
-    // BUG FIX #2: Campaign details now handles missing objective gracefully
+    // BUG FIX #2: Campaign details now handles missing objective gracefully + supports textarea
     function populateCampaignDetails() {
       if (!state.objective) {
         const content = document.getElementById('campaignDetailsContent');
@@ -567,12 +570,24 @@
       title.textContent = detailConfig.title;
       desc.textContent = detailConfig.desc;
       
-      content.innerHTML = detailConfig.fields.map(field => `
-        <div class="form-group">
-          <label class="form-label">${field.label}</label>
-          <input type="text" class="form-input" placeholder="${field.placeholder}" onchange="state.campaignDetails['${field.name}'] = this.value;">
-        </div>
-      `).join('');
+      // CHANGE #1: Support textarea for longer form fields
+      content.innerHTML = detailConfig.fields.map(field => {
+        if (field.type === 'textarea') {
+          return `
+            <div class="form-group">
+              <label class="form-label">${field.label}</label>
+              <textarea class="form-input" placeholder="${field.placeholder}" onchange="state.campaignDetails['${field.name}'] = this.value;" style="min-height: 150px; resize: vertical;"></textarea>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="form-group">
+              <label class="form-label">${field.label}</label>
+              <input type="text" class="form-input" placeholder="${field.placeholder}" onchange="state.campaignDetails['${field.name}'] = this.value;">
+            </div>
+          `;
+        }
+      }).join('');
     }
 
     function selectBroll(type, elem) {
@@ -586,6 +601,54 @@
       document.getElementById('wizardScreen').classList.remove('hidden');
       populateStepFlow();
       updateStepDisplay();
+    }
+
+    // CHANGE #2: Start Over button - resets everything
+    function startOver() {
+      state = {
+        business: null,
+        objective: null,
+        campaignDetails: {},
+        websiteUrl: null,
+        businessName: null,
+        uvp: null,
+        ageRange: null,
+        genderDiversity: null,
+        primarySetting: null,
+        locations: [],
+        broll: null,
+        reelLength: 30,
+        voiceTone: null
+      };
+      
+      // Reset UI
+      document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('#businessGrid .option-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('#objectiveGrid .option-card').forEach(c => c.classList.remove('selected'));
+      
+      // Clear form inputs
+      document.getElementById('websiteUrl').value = '';
+      document.getElementById('businessName').value = '';
+      document.getElementById('uvp').value = '';
+      document.getElementById('ageRange').value = '';
+      document.getElementById('genderDiversity').value = '';
+      document.getElementById('primarySetting').value = '';
+      document.getElementById('reelLength').value = '30';
+      document.getElementById('voiceTone').value = '';
+      document.getElementById('apiInput').value = '';
+      
+      // Reset sidebar
+      document.getElementById('summaryBiz').textContent = '-';
+      document.getElementById('summaryObjective').textContent = '-';
+      document.getElementById('summaryAudience').textContent = '-';
+      document.getElementById('summaryReel').textContent = '30s';
+      
+      // Show goal screen again
+      document.getElementById('goalScreen').classList.remove('hidden');
+      document.getElementById('wizardScreen').classList.add('hidden');
+      
+      // Reset continue button
+      document.getElementById('continueBtn').disabled = true;
     }
 
     function populateStepFlow() {
