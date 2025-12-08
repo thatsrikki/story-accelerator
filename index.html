@@ -71,7 +71,7 @@
     .sidebar h3 { font-size: 18px; color: #333; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0; }
     .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; }
     .summary-label { font-weight: 600; color: #666; }
-    .summary-value { color: #667eea; font-weight: 500; }
+    .summary-value { color: #667eea; font-weight: 500; text-align: right; }
     
     @media (max-width: 1024px) {
       #wizardScreen { grid-template-columns: 1fr; }
@@ -139,7 +139,7 @@
         <div class="progress">
           <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
           <div style="text-align: center; font-size: 12px; color: #666; margin-top: 10px;">
-            <span id="stepCounter">Step 1 of 5</span>
+            <span id="stepCounter">Step 1 of 7</span>
           </div>
         </div>
       </div>
@@ -221,7 +221,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Target Audience Age Range</label>
-            <select id="ageRange" class="form-select">
+            <select id="ageRange" class="form-select" onchange="updateAudienceSummary()">
               <option value="">Select...</option>
               <option value="Gen Z (13-25)">Gen Z (13-25)</option>
               <option value="Millennials (26-40)">Millennials (26-40)</option>
@@ -232,7 +232,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Gender Diversity</label>
-            <select id="genderDiversity" class="form-select">
+            <select id="genderDiversity" class="form-select" onchange="updateAudienceSummary()">
               <option value="">Select...</option>
               <option value="All genders">All genders</option>
               <option value="Predominantly male">Predominantly male</option>
@@ -242,7 +242,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Primary Setting/Context</label>
-            <select id="primarySetting" class="form-select">
+            <select id="primarySetting" class="form-select" onchange="updateAudienceSummary()">
               <option value="">Select...</option>
               <option value="Home office/Remote">Home office/Remote</option>
               <option value="Retail/In-store">Retail/In-store</option>
@@ -300,7 +300,7 @@
           <p>Final touches before generating your storyboard</p>
           <div class="form-group">
             <label class="form-label">Reel Length</label>
-            <select id="reelLength" class="form-select">
+            <select id="reelLength" class="form-select" onchange="document.getElementById('summaryReel').textContent = this.value + 's'">
               <option value="15">15 seconds</option>
               <option value="30" selected>30 seconds</option>
               <option value="45">45 seconds</option>
@@ -400,7 +400,7 @@
           { id: 'team', icon: '👥', name: 'Meet the Mixologist', desc: 'Bartender' },
           { id: 'seasonal', icon: '🎉', name: 'Happy Hour', desc: 'Special pricing' },
           { id: 'flash', icon: '🔥', name: 'Tonight Only', desc: 'Flash promo' },
-          { id: 'educational', icon: '📚', name: 'Drink Tutorial', desc: 'How it's made' },
+          { id: 'educational', icon: '📚', name: 'Drink Tutorial', desc: 'How it\'s made' },
           { id: 'testimonial', icon: '⭐', name: 'Guest Experience', desc: 'Reviews' }
         ]
       },
@@ -510,7 +510,9 @@
     let visibleSteps = [];
 
     function selectGoal(goal, elem) {
-      // Not using this in new flow, but keeping for reference
+      document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+      elem.classList.add('selected');
+      document.getElementById('continueBtn').disabled = false;
     }
 
     function selectBusiness(biz, elem) {
@@ -518,9 +520,9 @@
       document.querySelectorAll('#businessGrid .option-card').forEach(c => c.classList.remove('selected'));
       elem.classList.add('selected');
       document.getElementById('summaryBiz').textContent = businessData[biz].name;
-      nextStep();
     }
 
+    // BUG FIX #1: Objective grid now populates after nextStep increments
     function populateObjectives() {
       if (!state.business) return;
       const objectives = businessData[state.business].objectives;
@@ -544,10 +546,19 @@
       document.getElementById('summaryObjective').textContent = selected.name;
     }
 
+    // BUG FIX #2: Campaign details now handles missing objective gracefully
     function populateCampaignDetails() {
-      if (!state.objective) return;
+      if (!state.objective) {
+        const content = document.getElementById('campaignDetailsContent');
+        content.innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">⚠️ Please go back and select a campaign objective</p>';
+        return;
+      }
+      
       const detailConfig = campaignDetailsFields[state.objective];
-      if (!detailConfig) return;
+      if (!detailConfig) {
+        console.error('No campaign details config found for:', state.objective);
+        return;
+      }
 
       const title = document.getElementById('campaignDetailsTitle');
       const desc = document.getElementById('campaignDetailsDesc');
@@ -581,7 +592,6 @@
       const allSteps = document.querySelectorAll('.step');
       allSteps.forEach(s => s.classList.add('hidden'));
       
-      // Show in order: Business Type, Objectives, Campaign Details, Demographics, Locations, B-Roll, Final
       document.querySelectorAll('[data-step="1"]')[0].classList.remove('hidden');
       document.querySelectorAll('[data-step="2"]')[0].classList.remove('hidden');
       document.getElementById('campaignDetailsStep').classList.remove('hidden');
@@ -613,7 +623,12 @@
       elem.classList.add('selected');
     }
 
+    // BUG FIX #1: Move populate calls AFTER step increment
     function nextStep() {
+      currentStep++;
+      updateStepDisplay();
+      
+      // Populate content AFTER moving to new step
       if (currentStep === 2) {
         populateObjectives();
       } else if (currentStep === 3) {
@@ -621,14 +636,23 @@
       } else if (currentStep === 5) {
         populateLocations();
       }
-      
-      currentStep++;
-      updateStepDisplay();
     }
 
+    // BUG FIX #3: Back button re-populates content when going backwards
     function prevStep() {
-      if (currentStep > 1) currentStep--;
-      updateStepDisplay();
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepDisplay();
+        
+        // Re-populate content when going back
+        if (currentStep === 2 && state.business) {
+          populateObjectives();
+        } else if (currentStep === 3 && state.objective) {
+          populateCampaignDetails();
+        } else if (currentStep === 5 && state.business) {
+          populateLocations();
+        }
+      }
     }
 
     function updateStepDisplay() {
@@ -644,6 +668,20 @@
       const pct = (currentStep / visibleSteps.length) * 100;
       document.getElementById('progressFill').style.width = pct + '%';
       document.getElementById('stepCounter').textContent = `Step ${currentStep} of ${visibleSteps.length}`;
+    }
+
+    // BUG FIX #4: Real-time summary sidebar updates
+    function updateAudienceSummary() {
+      const age = document.getElementById('ageRange').value;
+      const gender = document.getElementById('genderDiversity').value;
+      const setting = document.getElementById('primarySetting').value;
+      
+      let summary = [];
+      if (age) summary.push(age.split('(')[0].trim());
+      if (gender) summary.push(gender);
+      if (setting) summary.push(setting.split('/')[0]);
+      
+      document.getElementById('summaryAudience').textContent = summary.length > 0 ? summary.join(' | ') : '-';
     }
 
     function toggleApiVis() {
@@ -665,7 +703,6 @@
         return;
       }
 
-      // Collect all form data
       state.websiteUrl = document.getElementById('websiteUrl').value;
       state.businessName = document.getElementById('businessName').value || 'Your Business';
       state.uvp = document.getElementById('uvp').value || 'Premium quality';
@@ -675,9 +712,6 @@
       state.reelLength = document.getElementById('reelLength').value;
       state.voiceTone = document.getElementById('voiceTone').value || 'Professional';
 
-      document.getElementById('summaryReel').textContent = state.reelLength + 's';
-
-      // Build comprehensive prompt
       const prompt = buildEnhancedPrompt();
 
       try {
@@ -694,7 +728,6 @@
         const data = await resp.json();
         const storyboard = data.choices[0].message.content;
 
-        // Display in formatted window
         const win = window.open('', '_blank', 'width=1000,height=800');
         win.document.write(`<!DOCTYPE html>
 <html>
@@ -753,7 +786,6 @@ CAMPAIGN DETAILS:
 - Objective: ${state.objective.toUpperCase()}
 `;
 
-      // Add objective-specific details
       Object.entries(state.campaignDetails).forEach(([key, value]) => {
         if (value) {
           prompt += `- ${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}\n`;
@@ -808,11 +840,6 @@ Generate a storyboard that is specific, actionable, and ready for production. Us
 
       return prompt;
     }
-
-    // Initialize on load
-    window.addEventListener('load', () => {
-      continueToWizard();
-    });
   </script>
 </body>
 </html>
